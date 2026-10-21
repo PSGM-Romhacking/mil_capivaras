@@ -2,9 +2,8 @@
 
 **English** · [Português](architecture.pt-BR.md) · [Español](architecture.es.md)
 
-Goal: make the Mil Capivaras frontend usable by **other emulators**, and turn the PV-1000
-core into a **libretro core** without rewriting anything. Plan approved on 2026-10-17;
-steps 1–6 completed the same day, including the libretro core.
+The PV-1000 core is kept apart from the frontend: the frontend serves **other emulators**,
+and the core becomes a **libretro core** without rewriting anything.
 
 ## Structure (Cargo workspace)
 
@@ -14,7 +13,7 @@ crates/core/            the PV-1000 console (machine, memory, game database, tes
 crates/frontend/        reusable frontend (egui, menus, library, controllers,
                         save states, rewind, recording, covers, languages, config)
 crates/app/             executable: pv1000-core + emu-frontend + branding (name, icon, About)
-crates/libretro/        mil_capivaras_libretro.so = pv1000-core + libretro API (done on 2026-10-17)
+crates/libretro/        mil_capivaras_libretro.so = pv1000-core + libretro API
 ```
 
 - `pv1000-core` → `emu-api`, `iz80` and `serde`/`serde_json`; nothing from the interface.
@@ -35,24 +34,10 @@ crates/libretro/        mil_capivaras_libretro.so = pv1000-core + libretro API (
 | Options | `Core::options()` / `set_option()`, like libretro *core options* (model, picture) |
 | Debugging | `debug_views()`: images (with optional grid) and tables in groups (`DebugGroup`, `DebugValue`: text, on/off, color) |
 
-## Steps (the program works at the end of each one)
+The libretro core is described in [libretro.md](libretro.md).
 
-1. Workspace + moving files without changing behavior.
-2. `emu-api` + PV-1000 adapter (RetroPad → MiSTer bits, mono → stereo, state as bytes).
-3. `app.rs` uses the trait (resolution, FPS, RetroPad controls, state as bytes).
-4. PV-1000 branding and texts in the app; one catalog per language.
-5. Check everything (tests, frames, controls, recording, library, interface) and document.
-6. (Separate) `libretro` — see [libretro.md](libretro.md).
+## Details
 
-## Side effects
-
-- Names of the control actions in `config.json` change (e.g. `fire1` → `p1_b`).
-- Save states: new header; reading of the old format is kept.
-
-## How it turned out (steps 1–5)
-
-- **Verification:** the tests pass; Ascend, Cacorm and Mazy frames identical byte for byte
-  to the previous binary; an old save state (`PVST`) loads through the new path.
 - **Save state on file:** `EFST` + version (u32) + FNV-1a 64 of the ROM + core bytes.
   A file without this header goes straight to the core, which recognizes the old format.
 - **Controls:** the keyboard and each controller produce a RetroPad `u16` per player. The 1st
@@ -77,11 +62,11 @@ crates/libretro/        mil_capivaras_libretro.so = pv1000-core + libretro API (
    (`COVER_W`/`COVER_H`, portrait boxes) — to become a `SystemInfo` field when
    a system with boxes in another format shows up.
 
-## File organization (review of 2026-10-18)
+## File organization
 
-Checked: the dependencies follow the design above (the core uses neither egui nor anything from the
-frontend; the frontend does not depend on `pv1000-core`; the libretro core does not use the frontend).
-The two files that had grown too large were split, without changing behavior:
+The dependencies follow the design above: the core uses neither egui nor anything from the
+frontend; the frontend does not depend on `pv1000-core`; the libretro core does not use the
+frontend. The two largest files are split into child modules:
 
 **`crates/frontend/src/app.rs`** and the child modules in `app/`, each one
 an `impl App` block (a child module sees the parent's private fields, so the `App`
@@ -116,7 +101,3 @@ parent uses the children's fields, so they are `pub(super)`:
 | `machine/debug.rs` | debugging: interrupt log, instruction trace, registers, memory, tiles |
 | `machine/state.rs` | `Snapshot` and the save state format |
 | `machine/tests.rs` | the console tests |
-
-Verification: the tests pass, `cargo clippy --workspace --all-targets` gives no
-warnings, the 152 comparisons of the MiSTer model regression came out identical, and so did the
-documentation screenshots (except the debugger's CPU tab, which shows live registers).

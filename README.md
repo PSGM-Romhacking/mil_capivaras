@@ -561,12 +561,11 @@ reference and understand the discrepancies:
 
 **Why the MiSTer as reference:** it is a description of the circuit (Verilog) that can be
 simulated cycle by cycle and compared byte by byte, and the author checked details
-against videos of the real console (the border, for example) [F1]. When the project
-started, the MAME list marked 6 cartridges as unsupported (Dig Dug, Pachinko-UFO, Fighting
-Bug, Space Panic, Naughty Boy, Dirty Chameleon) [M2]. **The flag is out of date:** tested
-on 2026-10-17 in MAME 0.289 (the latest version), all 6 reach gameplay and score points;
-the interrupt, port-read and bus-stealing fixes of July and August 2024 made them run,
-but the list was not corrected. Among the other emulators, MAME is today the most faithful
+against videos of the real console (the border, for example) [F1]. The MAME list marks 6
+cartridges as unsupported (Dig Dug, Pachinko-UFO, Fighting Bug, Space Panic, Naughty Boy,
+Dirty Chameleon) [M2]. **The flag is out of date:** in MAME 0.289, all 6 reach gameplay and
+score points; the interrupt, port-read and bus-stealing fixes of 2024 made them run, but the
+list was not corrected. Among the other emulators, MAME is today the most faithful
 to the hardware ([below](#the-mister-core-and-the-real-hardware)); Mil Capivaras' hardware
 model comes closer in the measurements taken on the console
 ([section 9](#validation-against-the-console-pars-measurements)).
@@ -624,8 +623,7 @@ Capivaras':
 | RAM mirrored at 0x8000–0xBFFF | no | no / **yes** |
 | Raster effects (writing mid-line) | no | yes: video is read pixel by pixel |
 
-With the console's timing and the matrix delay (October 2026), Mil Capivaras' hardware
-model covers all 14 points on the list.
+Mil Capivaras' hardware model covers all 14 points on the list.
 
 ### lidnariq's test ROMs on Mil Capivaras
 
@@ -637,14 +635,14 @@ console posted there:
 | `scanwfe` (port FE) | big black digits over "0F" tiles, with white bands | the same structure in the hardware model | port FE is implemented |
 | `wff-v2` (port FF, high bits) | the sequence 0R 00 2R 22 4R… | shows "4R", one of the expected steps | the 8 banks and "force" are implemented |
 | `dither-no-ei` | dither bars | the same bars | depends only on the patterns |
-| `irqtiming` (FC = 1) | a white bar on the left of the top border, every frame | **the same bar, in the same place** (before: none) | the bar starts 55 cycles after the interrupt, which on the console lands at the start of the next line. With the MiSTer timing, horizontal blanking is longer (26.5 µs vs 14.3 µs) and the bar disappeared inside it |
-| `toggle` (picture on and off) | the fractal with horizontal bands at the top and a diagonal staircase at the bottom left | **the fractal, the bands and the staircase** (before: a different drawing); the staircase's slope still differs a little | depends on the exact line length and on bus stealing |
-| `joystick` (with a button held) | the following rows still show "1" for a while; six on the 21-cycles-per-column row | **six columns** on the 21-cycle row (~126 cycles), as lidnariq measured (before: the button was gone at once) | the matrix's electrical delay |
+| `irqtiming` (FC = 1) | a white bar on the left of the top border, every frame | **the same bar, in the same place** | the bar starts 55 cycles after the interrupt, which on the console lands at the start of the next line. With the MiSTer timing, horizontal blanking is longer (26.5 µs vs 14.3 µs) and the bar disappeared inside it |
+| `toggle` (picture on and off) | the fractal with horizontal bands at the top and a diagonal staircase at the bottom left | **the fractal, the bands and the staircase**; the staircase's slope still differs a little | depends on the exact line length and on bus stealing |
+| `joystick` (with a button held) | the following rows still show "1" for a while; six on the 21-cycles-per-column row | **six columns** on the 21-cycle row (~126 cycles), as lidnariq measured | the matrix's electrical delay |
 
-**Conclusion:** before the console's timing, ports FE, FF and FC passed, and what failed
-was exactly the timing: the line length, bus stealing and the matrix delay. With the two
-changes of October 2026, the 6 comparable tests match the photos. `twinkle` plays music
-and changes the border over time, so a single capture is not enough to compare it.
+**Conclusion:** the 6 comparable tests match the photos. The port FE, FF and FC tests
+depend only on the ports; `irqtiming`, `toggle` and `joystick` depend on the console's
+timing: the line length, bus stealing and the matrix delay. `twinkle` plays music and
+changes the border over time, so a single capture is not enough to compare it.
 
 ### The two models
 
@@ -655,7 +653,7 @@ The **Emulation › Model** option (and, in RetroArch, *Core Options › Model*)
 | **MiSTer core (validated)**, the default | the MiSTer core, byte by byte ([section 9](#9-accuracy-and-validation)) | playing; it is the model proven on the 39 programs |
 | **Real hardware (NESdev / MAME)** | the console, where NESdev and MAME 0.289 document it: **288 × 262 frame at 59.299 Hz**, **CPU halted while the picture is drawn**, interrupts at pixel 276, only when enabled on port FC and acknowledged through FD; OR matrix with the **electrical delay**; full FE and FF ports (map and PCG address, 8 pattern banks, screen off); unowned ports read as `0xFF` | developing and testing new ROMs: what hangs or slows down on the console hangs or slows down here too |
 
-**Validation of the hardware model** (with the console's timing, October 2026):
+**Validation of the hardware model:**
 - **every program in the game database** (13 games, 22 Inufuto homebrews, PVong, Simon,
   Demônios and the controller test ROM) runs on it, with automatic Start and fire up to frame 3000;
 - **games slow down where the CPU can't keep up**, as expected with ~37% of the Z80: in
@@ -686,10 +684,10 @@ In the TV picture, the border bands repeat the color of the first and last emula
 border lines. Screenshots and recordings come out at the frame size (224 × 244), without
 stretching.
 
-**The MiSTer model did not change:** the console's timing only applies to the hardware
+**The two models are independent:** the console's timing only applies to the hardware
 model. In the MiSTer model the CPU never halts and the frame is 59.538 Hz, and the
-byte-by-byte comparison with the core still holds: the regression's picture and RAM
-comparisons (frames 300 and 3000) came out identical after the change.
+byte-by-byte comparison with the core still holds: the picture and RAM regression (frames
+300 and 3000) checks this on every change.
 
 **The frame rate follows the model:** 59.538 Hz in the MiSTer model and 59.299 Hz in the
 hardware one. The window's pacing, the sound, the speed counter, MP4 recordings and, in
@@ -1238,7 +1236,7 @@ released) and keeps reading it as 1 for **136 cycles** (the middle of the measur
 126–147). The rise, under ~15 cycles, is treated as instantaneous. The state goes into the
 save state (version 3).
 
-**Ports and video** as before: port FE finds the map and the PCG, the top 3 bits of FF
+**Ports and video:** port FE finds the map and the PCG, the top 3 bits of FF
 choose the bank and bit 3 turns the picture off; unowned ports read `0xFF`. RAM is
 mirrored at 0x8000–0xBFFF, as on the console (in the MiSTer model, memory is flat, as in
 the core).
@@ -1434,10 +1432,8 @@ is the proof that Mil Capivaras behaves like the MiSTer hardware.
 - the phase between the CPU clock and the video clock depended on the ROM size.
 
 **What is still different:**
-- **"Stack leftovers" (solved: not an emulation error):** in Dig Dug, Ruptus, Uchotos
-  and Yewdow, 1 or 2 bytes differed in some frames. The old explanation ("an interrupt
-  accepted one instruction earlier or later") was wrong. The investigation of 2026-10-18
-  showed:
+- **"Stack leftovers" (not an emulation error):** in Dig Dug, Ruptus, Uchotos and
+  Yewdow, 1 or 2 bytes differ in some frames. The cause:
   - **interrupts** are accepted on the same frame, line and instruction on both, in all 4
     games (11,916 to 14,209 interrupts per game over 1,000–1,100 frames);
   - the **instruction sequence** is identical (compared fetch by fetch in the frame where
@@ -1451,7 +1447,7 @@ is the proof that Mil Capivaras behaves like the MiSTer hardware.
     1,100 frames, both from an instruction starting exactly at the boundary (position 0 or
     380), which each side puts in a different frame because of ±1 pixel in the timing
     measurement.
-  - **Simon**, compared later, has the same leftover: 1 byte at 0xBFE6, the same address
+  - **Simon** has the same leftover: 1 byte at 0xBFE6, the same address
     as in Uchotos.
 
   The tools used (interrupt log and instruction trace in the core, `log_interrupts`/
@@ -1544,17 +1540,14 @@ T states before BUSACK") [N7].
 | INC | $5702 (22,274) | **$5702 (22,274)** | $563A (22,074) |
 
 MAME is ~190–200 cycles per frame below the console. That explains why the automatic runs
-drift apart between the two over time. The old Tutankham "open point" was this: with Start
+drift apart between the two over time. It also explains Tutankham: with Start
 alone, MAME also enters the game; the title shown at frame 3000 was the return to the title
 after a game over that came sooner there.
 
 ### What is still missing
 
-The full list, with the status of each item, is in [`docs/accuracy.md`](docs/accuracy.md).
-Already done: Par's numbers, bus stealing (the approximation is enough),
-Tutankham on MAME, IM 0/IM 2, the 0xC000–0xFFFF range, ZEXALL, the sound filters and the
-"stack leftovers" (an artifact of the comparison). Still pending: video details during the
-picture, the channels' phase in XOR mode and TV colors.
+Video details during the picture, the channels' phase in XOR mode and TV colors. The full
+list, with the status of each item, is in [`docs/accuracy.md`](docs/accuracy.md).
 
 ---
 
@@ -1563,8 +1556,7 @@ picture, the channels' phase in XOR mode and TV colors.
 **How it was tested:** each game ran in Mil Capivaras and in the MiSTer reference with the
 same input (Start on frames 120–129; Fire 1 + right alternating every 20 frames from frame
 200 on). The image was compared at frames 2, 50, 300, 1000 and 3000, and the 64 KB of RAM
-at frames 1000 and 3000. First the 35 original games, then the other 4 homebrews, with the
-same method. **At frame 3000, image and RAM are identical in all 39 programs**; the RAM
+at frames 1000 and 3000. **At frame 3000, image and RAM are identical in all 39 programs**; the RAM
 column below shows frame 1000, the only one with any difference.
 
 **Status:** "Perfect" = image identical to the reference in every frame tested and RAM

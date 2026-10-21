@@ -566,11 +566,10 @@ referencia y entender las divergencias:
 
 **Por qué MiSTer como referencia:** es una descripción del circuito (Verilog) que se puede
 simular ciclo a ciclo y comparar byte a byte, y el autor verificó detalles en videos del
-aparato real (el borde, por ejemplo) [F1]. Cuando empezó el proyecto, la lista de MAME
-marcaba 6 cartuchos como no soportados (Dig Dug, Pachinko-UFO, Fighting Bug, Space Panic,
-Naughty Boy, Dirty Chameleon) [M2]. **La marca está desactualizada:** probados el 2026-10-17
-en MAME 0.289 (la versión más reciente), los 6 llegan a la partida y puntúan; las correcciones de
-interrupción, lectura de puertos y robo de bus de julio y agosto de 2024 los hicieron
+aparato real (el borde, por ejemplo) [F1]. La lista de MAME marca 6 cartuchos como no
+soportados (Dig Dug, Pachinko-UFO, Fighting Bug, Space Panic, Naughty Boy, Dirty Chameleon)
+[M2]. **La marca está desactualizada:** en MAME 0.289, los 6 llegan a la partida y puntúan;
+las correcciones de interrupción, lectura de puertos y robo de bus de 2024 los hicieron
 funcionar, pero la lista no se corrigió. Entre los otros emuladores, MAME es hoy el más fiel
 al hardware ([abajo](#el-core-de-mister-y-el-hardware-real)); el modelo de hardware de Mil
 Capivaras se acerca más en las mediciones hechas en el aparato
@@ -629,8 +628,7 @@ la de Mil Capivaras:
 | RAM espejada en 0x8000–0xBFFF | no | no / **sí** |
 | Efectos de *raster* (escribir en medio de la línea) | no | sí: el video se lee píxel a píxel |
 
-Con la temporización de la consola y el retardo de la matriz (octubre de 2026), el modelo
-de hardware de Mil Capivaras cubre los 14 puntos de la lista.
+El modelo de hardware de Mil Capivaras cubre los 14 puntos de la lista.
 
 ### Las ROMs de prueba de lidnariq en Mil Capivaras
 
@@ -642,14 +640,14 @@ la consola publicadas allí:
 | `scanwfe` (puerto FE) | dígitos grandes en negro sobre tiles "0F", con franjas blancas | la misma estructura en el modelo de hardware | el puerto FE está implementado |
 | `wff-v2` (puerto FF, bits altos) | la secuencia 0R 00 2R 22 4R… | muestra "4R", uno de los pasos esperados | los 8 bancos y el "forzar" están implementados |
 | `dither-no-ei` | barras de tramado | las mismas barras | solo depende de los patrones |
-| `irqtiming` (FC = 1) | una barra blanca a la izquierda del borde superior, en cada cuadro | **la misma barra, en el mismo lugar** (antes: ninguna) | la barra empieza 55 ciclos después de la interrupción, lo que en la consola cae al inicio de la línea siguiente. Con la temporización de MiSTer, el apagado horizontal es más largo (26,5 µs contra 14,3 µs) y la barra desaparecía dentro de él |
-| `toggle` (enciende y apaga la imagen) | el fractal con franjas horizontales arriba y una escalera diagonal abajo a la izquierda | **el fractal, las franjas y la escalera** (antes: otro dibujo); la inclinación de la escalera todavía difiere un poco | depende del largo exacto de la línea y del robo de bus |
-| `joystick` (con un botón pulsado) | las filas siguientes todavía muestran "1" un rato; seis en la de 21 ciclos por columna | **seis columnas** en la fila de 21 ciclos (~126 ciclos), como midió lidnariq (antes: el botón desaparecía al instante) | el retardo eléctrico de la matriz |
+| `irqtiming` (FC = 1) | una barra blanca a la izquierda del borde superior, en cada cuadro | **la misma barra, en el mismo lugar** | la barra empieza 55 ciclos después de la interrupción, lo que en la consola cae al inicio de la línea siguiente. Con la temporización de MiSTer, el apagado horizontal es más largo (26,5 µs contra 14,3 µs) y la barra desaparecía dentro de él |
+| `toggle` (enciende y apaga la imagen) | el fractal con franjas horizontales arriba y una escalera diagonal abajo a la izquierda | **el fractal, las franjas y la escalera**; la inclinación de la escalera todavía difiere un poco | depende del largo exacto de la línea y del robo de bus |
+| `joystick` (con un botón pulsado) | las filas siguientes todavía muestran "1" un rato; seis en la de 21 ciclos por columna | **seis columnas** en la fila de 21 ciclos (~126 ciclos), como midió lidnariq | el retardo eléctrico de la matriz |
 
-**Conclusión:** antes de la temporización de la consola, los puertos FE, FF y FC pasaban,
-y lo que fallaba era justamente la temporización: el largo de la línea, el robo de bus y el
-retardo de la matriz. Con los dos cambios de octubre de 2026, las 6 pruebas comparables
-coinciden con las fotos. `twinkle` toca música y cambia el borde con el tiempo, así que una
+**Conclusión:** las 6 pruebas comparables coinciden con las fotos. Las de los puertos FE,
+FF y FC dependen solo de los puertos; `irqtiming`, `toggle` y `joystick` dependen de la
+temporización de la consola: el largo de la línea, el robo de bus y el retardo de la
+matriz. `twinkle` toca música y cambia el borde con el tiempo, así que una
 sola captura no alcanza para compararla.
 
 ### Los dos modelos
@@ -661,7 +659,7 @@ La opción **Emulación › Modelo** (y, en RetroArch, *Opciones del núcleo ›
 | **Core de MiSTer (validado)**, el predeterminado | el core de MiSTer, byte a byte ([sección 9](#9-precisión-y-validación)) | jugar; es el modelo comprobado en los 39 programas |
 | **Hardware real (NESdev / MAME)** | el aparato, donde NESdev y MAME 0.289 lo documentan: **cuadro de 288 × 262 a 59,299 Hz**, **CPU detenida mientras se dibuja la imagen**, interrupciones en el píxel 276, solo cuando están habilitadas en el puerto FC y reconocidas por FD; matriz en OR y con el **retardo eléctrico**; puertos FE y FF completos (dirección del mapa y del PCG, 8 bancos de patrones, pantalla apagada); puertos sin dueño leídos como `0xFF` | desarrollar y probar ROMs nuevas: lo que se cuelga o se vuelve lento en la consola se cuelga o se vuelve lento aquí también |
 
-**Validación del modelo de hardware** (con la temporización de la consola, octubre de 2026):
+**Validación del modelo de hardware:**
 - **todos los programas de la base de juegos** (13 juegos, 22 homebrews de Inufuto, PVong,
   Simon, Demônios y la ROM de prueba de los mandos) funcionan en él, con Start y disparos automáticos hasta el cuadro 3000;
 - **los juegos se vuelven más lentos donde la CPU no da abasto**, como se espera con ~37 %
@@ -693,10 +691,10 @@ En la imagen TV, las franjas de borde repiten el color de la primera y de la úl
 emuladas. Las capturas de pantalla y las grabaciones salen al tamaño del cuadro (224 × 244), sin
 estirar.
 
-**El modelo MiSTer no cambió:** la temporización de la consola solo vale en el modelo de
-hardware. En el modelo MiSTer la CPU nunca se detiene y el cuadro es de 59,538 Hz, y la
-comparación byte a byte con el core sigue valiendo: las comparaciones de imagen y RAM
-de la regresión (cuadros 300 y 3000) salieron idénticas después del cambio.
+**Los dos modelos son independientes:** la temporización de la consola solo vale en el
+modelo de hardware. En el modelo MiSTer la CPU nunca se detiene y el cuadro es de 59,538 Hz,
+y la comparación byte a byte con el core sigue valiendo: la regresión de imagen y RAM
+(cuadros 300 y 3000) lo comprueba en cada cambio.
 
 **La tasa de cuadros sigue al modelo:** 59,538 Hz en el modelo MiSTer y 59,299 Hz en el de
 hardware. El ritmo de la ventana, el sonido, el contador de velocidad, las grabaciones en
@@ -1248,7 +1246,7 @@ deseleccionada o un botón soltado) y la sigue leyendo como 1 durante **136 cicl
 medio del rango medido, 126–147). La subida, de menos de ~15 ciclos, se trata como
 instantánea. El estado entra en el save state (versión 3).
 
-**Puertos y video** como antes: el puerto FE encuentra el mapa y el PCG, los 3 bits altos
+**Puertos y video:** el puerto FE encuentra el mapa y el PCG, los 3 bits altos
 de FF eligen el banco y el bit 3 apaga la imagen; los puertos sin dueño leen `0xFF`. La RAM está
 reflejada en 0x8000–0xBFFF, como en el aparato (en el modelo MiSTer, la memoria es plana,
 como en el core).
@@ -1443,10 +1441,8 @@ la prueba de que Mil Capivaras se comporta como el hardware de MiSTer.
 - la fase entre el reloj de la CPU y el del video dependía del tamaño de la ROM.
 
 **Qué sigue siendo distinto:**
-- **"Restos de pila" (resuelto: no es un error de emulación):** en Dig Dug, Ruptus,
-  Uchotos y Yewdow, 1 o 2 bytes diferían en algunos cuadros. La explicación antigua ("una
-  interrupción aceptada una instrucción antes o después") era errónea. La investigación del
-  2026-10-18 mostró:
+- **"Restos de pila" (no es un error de emulación):** en Dig Dug, Ruptus, Uchotos y
+  Yewdow, 1 o 2 bytes difieren en algunos cuadros. La causa:
   - las **interrupciones** se aceptan en el mismo cuadro, la misma línea y la misma
     instrucción en los dos, en los 4 juegos (de 11.916 a 14.209 interrupciones por juego en
     1000–1100 cuadros);
@@ -1461,7 +1457,7 @@ la prueba de que Mil Capivaras se comporta como el hardware de MiSTer.
     1100 cuadros, ambas de una instrucción que empieza justo en el cambio (posición 0 o
     380), que cada lado pone en un cuadro distinto por ±1 píxel de diferencia en la medida
     del tiempo.
-  - **Simon**, comparado después, tiene la misma sobra: 1 byte en 0xBFE6, la misma
+  - **Simon** tiene la misma sobra: 1 byte en 0xBFE6, la misma
     dirección que en Uchotos.
 
   Las herramientas usadas (registro de interrupciones y rastreo de instrucciones en el
@@ -1555,18 +1551,15 @@ encendida):
 | INC | $5702 (22.274) | **$5702 (22.274)** | $563A (22.074) |
 
 MAME queda ~190–200 ciclos por cuadro por debajo de la consola. Eso explica por qué las
-partidas automáticas se separan con el tiempo entre los dos. El antiguo "punto abierto" de
-Tutankham era eso: con Start solo, MAME también entra al juego; el título que aparecía en el
+partidas automáticas se separan con el tiempo entre los dos. Eso explica también
+Tutankham: con Start solo, MAME también entra al juego; el título que aparecía en el
 cuadro 3000 era la vuelta al título después de un *game over* que allí llegó antes.
 
 ### Lo que falta
 
-La lista completa, con la situación de cada punto, está en
-[`docs/accuracy.es.md`](docs/accuracy.es.md). Ya resueltos: los números de Par, el
-robo de bus (la aproximación basta), Tutankham en MAME, IM 0/IM 2, el rango 0xC000–0xFFFF,
-ZEXALL, los filtros del sonido y los "restos de pila" (eran un artefacto de la comparación).
-Pendientes: detalles del video durante la imagen, la fase de los canales en modo XOR y los
-colores de TV.
+Detalles del video durante la imagen, la fase de los canales en modo XOR y los colores de
+TV. La lista completa, con la situación de cada punto, está en
+[`docs/accuracy.es.md`](docs/accuracy.es.md).
 
 ---
 
@@ -1575,9 +1568,8 @@ colores de TV.
 **Cómo se probó:** cada juego se ejecutó en Mil Capivaras y en la referencia de MiSTer con
 la misma entrada (Start en los cuadros 120–129; Fire 1 + derecha alternando cada 20
 cuadros a partir del 200). La imagen se comparó en los cuadros 2, 50, 300, 1000 y 3000, y
-la RAM de 64 KB en los cuadros 1000 y 3000. Primero los 35 juegos originales, después los
-otros 4 homebrews, con el mismo método. **En el cuadro 3000, imagen y RAM son idénticas en
-los 39 programas**; la columna de RAM de abajo muestra el cuadro 1000, el único con alguna
+la RAM de 64 KB en los cuadros 1000 y 3000. **En el cuadro 3000, imagen y RAM son
+idénticas en los 39 programas**; la columna de RAM de abajo muestra el cuadro 1000, el único con alguna
 diferencia.
 
 **Estado:** "Perfecto" = imagen idéntica a la referencia en todos los cuadros probados y

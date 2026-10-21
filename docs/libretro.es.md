@@ -2,12 +2,11 @@
 
 [English](libretro.md) · [Português](libretro.pt-BR.md) · **Español**
 
-Guía para convertir el emulador en un core `mil_capivaras_libretro.so`, que se ejecuta
-dentro de RetroArch. Fue el plan de implementación y sigue
-como guía de las decisiones; el estado actual está en el recuadro de abajo.
+Cómo el emulador se convierte en el core `mil_capivaras_libretro.so`, que se ejecuta
+dentro de RetroArch, y por qué se tomó cada decisión.
 
 
-> **Estado (2026-10-17): hecho.** `libretro` genera `mil_capivaras_libretro.so`
+> **Estado:** `libretro` genera `mil_capivaras_libretro.so`
 > (`make libretro`; `make install-libretro` copia `.so` + `.info` a la carpeta de cores
 > de RetroArch, leída de `retroarch.cfg`). Probado en RetroArch Flatpak 1.22.2: carga,
 > 224×224 a 59,54 FPS, audio a 48000 Hz, y el cuadro 600 de Dig Dug es idéntico byte a
@@ -38,7 +37,7 @@ y la documentación en <https://docs.libretro.com/development/cores/developing-c
 
 ## Directrices
 
-### 1. Workspace (hecho el 2026-10-17)
+### 1. Workspace
 
 El proyecto ya está separado (ver [architecture.es.md](architecture.es.md)):
 

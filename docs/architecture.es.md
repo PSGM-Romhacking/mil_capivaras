@@ -2,9 +2,8 @@
 
 [English](architecture.md) · [Português](architecture.pt-BR.md) · **Español**
 
-Objetivo: que la interfaz de Mil Capivaras sirva para **otros emuladores** y que el núcleo
-del PV-1000 se convierta en **core libretro** sin reescribir nada. Plan aprobado el 2026-10-17;
-pasos 1–6 concluidos el mismo día, incluido el core libretro.
+El núcleo del PV-1000 está separado de la interfaz: la interfaz sirve para **otros
+emuladores**, y el núcleo se convierte en **core libretro** sin reescribir nada.
 
 ## Estructura (workspace de Cargo)
 
@@ -14,7 +13,7 @@ crates/core/            la consola PV-1000 (machine, memory, base de juegos, pru
 crates/frontend/        interfaz reutilizable (egui, menús, biblioteca, mandos,
                         save states, rewind, grabación, carátulas, idiomas, config)
 crates/app/             ejecutable: pv1000-core + emu-frontend + marca (nombre, ícono, Acerca de)
-crates/libretro/        mil_capivaras_libretro.so = pv1000-core + API libretro (hecho el 2026-10-17)
+crates/libretro/        mil_capivaras_libretro.so = pv1000-core + API libretro
 ```
 
 - `pv1000-core` → `emu-api`, `iz80` y `serde`/`serde_json`; nada de la interfaz.
@@ -35,24 +34,10 @@ crates/libretro/        mil_capivaras_libretro.so = pv1000-core + API libretro (
 | Opciones | `Core::options()` / `set_option()`, como las *core options* de libretro (modelo, imagen) |
 | Depuración | `debug_views()`: imágenes (con cuadrícula opcional) y tablas en grupos (`DebugGroup`, `DebugValue`: texto, activado/desactivado, color) |
 
-## Pasos (el programa funciona al final de cada uno)
+El core libretro está descrito en [libretro.es.md](libretro.es.md).
 
-1. Workspace + mover archivos sin cambiar el comportamiento.
-2. `emu-api` + adaptador del PV-1000 (RetroPad → bits de MiSTer, mono → estéreo, estado en bytes).
-3. `app.rs` usa el trait (resolución, FPS, controles por RetroPad, estado en bytes).
-4. Marca y textos del PV-1000 en la app; un catálogo por idioma.
-5. Revisar todo (pruebas, cuadros, controles, grabación, biblioteca, interfaz) y documentar.
-6. (Aparte) `libretro` — ver [libretro.es.md](libretro.es.md).
+## Detalles
 
-## Efectos colaterales
-
-- Los nombres de las acciones de control en el `config.json` cambian (p. ej.: `fire1` → `p1_b`).
-- Save states: nueva cabecera; se mantiene la lectura del formato antiguo.
-
-## Cómo quedó (pasos 1–5)
-
-- **Verificación:** las pruebas pasan; cuadros de Ascend, Cacorm y Mazy idénticos byte a byte
-  al binario anterior; un save state antiguo (`PVST`) se carga por el camino nuevo.
 - **Save state en archivo:** `EFST` + versión (u32) + FNV-1a 64 de la ROM + bytes del núcleo.
   Un archivo sin esa cabecera va directo al núcleo, que reconoce el formato antiguo.
 - **Controles:** el teclado y cada mando generan un `u16` RetroPad por jugador. El 1.er
@@ -77,11 +62,11 @@ crates/libretro/        mil_capivaras_libretro.so = pv1000-core + API libretro (
    (`COVER_W`/`COVER_H`, cajas en vertical) — pasará a ser un campo del `SystemInfo` cuando
    aparezca un sistema con cajas en otro formato.
 
-## Organización de los archivos (revisión del 2026-10-18)
+## Organización de los archivos
 
-Comprobado: las dependencias siguen el diseño de arriba (el núcleo no usa egui ni nada de la
-interfaz; la interfaz no depende del `pv1000-core`; el core libretro no usa la interfaz).
-Los dos archivos que habían crecido demasiado se dividieron, sin cambiar el comportamiento:
+Las dependencias siguen el diseño de arriba: el núcleo no usa egui ni nada de la interfaz;
+la interfaz no depende del `pv1000-core`; el core libretro no usa la interfaz. Los dos
+archivos más grandes están divididos en módulos hijos:
 
 **`crates/frontend/src/app.rs`** y los módulos hijos en `app/`, cada uno
 un bloque `impl App` (un módulo hijo ve los campos privados del padre, así que la estructura
@@ -116,7 +101,3 @@ padre usa los campos de los hijos, así que son `pub(super)`:
 | `machine/debug.rs` | depuración: registro de interrupciones, traza de instrucciones, registros, memoria, tiles |
 | `machine/state.rs` | `Snapshot` y el formato del save state |
 | `machine/tests.rs` | las pruebas de la consola |
-
-Verificación: las pruebas pasan, `cargo clippy --workspace --all-targets` no da ninguna
-advertencia, las 152 comparaciones de la regresión del modelo MiSTer salieron idénticas y las capturas de la
-documentación también (salvo la pestaña CPU del depurador, que muestra registros en vivo).

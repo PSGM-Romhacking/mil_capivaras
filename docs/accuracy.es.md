@@ -2,11 +2,10 @@
 
 [English](accuracy.md) · [Português](accuracy.pt-BR.md) · **Español**
 
-Relevamiento del 2026-10-18, verificado en el código y en las fuentes ([N1]–[N9] del README,
-el documento de Par y el hilo del foro de NESdev). Notas al inicio del relevamiento:
-**modelo MiSTer 9,5**, **modelo de hardware 8**.
+Lo que ya está validado y lo que todavía falta, verificado en el código y en las fuentes
+([N1]–[N9] del README, el documento de Par y el hilo del foro de NESdev).
 
-## Situación (actualizada el 2026-10-18)
+## Situación
 
 | # | Ítem | Situación |
 |---|---|---|
@@ -25,11 +24,11 @@ el documento de Par y el hilo del foro de NESdev). Notas al inicio del relevamie
 
 Abajo, el resultado de cada ítem resuelto y el detalle de los que siguen abiertos.
 
-## Historial de las mejoras de precisión
+## Cómo se validó cada parte
 
-Todo lo que cambió en la precisión el 2026-10-17 y el 2026-10-18, en orden, con la prueba de
-cada ítem. El modelo MiSTer se valida contra la simulación del core; el modelo de hardware,
-contra mediciones hechas en aparatos reales por otras personas.
+Cada parte de la emulación, con la prueba. El modelo MiSTer se valida contra la simulación
+del core; el modelo de hardware, contra mediciones hechas en aparatos reales por otras
+personas.
 
 ### Modelo MiSTer (la referencia validada)
 
@@ -41,11 +40,9 @@ contra mediciones hechas en aparatos reales por otras personas.
 | `HALT` que sale con la interrupción (el `iz80` original se colgaba) | prueba `halt_resumes_on_interrupt` |
 | Memoria plana de 64 KB, sin espejos, y el rango 0xC000–0xFFFF guardando lo que se escribe, como en el core | regresión 152/152 idéntica (Battlot escribe por encima de 0xDC00) |
 | Los "restos de pila" explicados: artefacto de comparar la RAM en medio de una instrucción | interrupciones e instrucciones idénticas; con la captura alineada, 0 diferencias en 1.100 cuadros (Dig Dug, Uchotos, Yewdow) y 2 en Ruptus, de instrucciones que empiezan justo en el cambio |
-| Tasa documentada corregida: 59,538 Hz (el README decía 59,527) | la prueba `bus_stealing_on_hardware` compara las dos tasas |
 
-Los otros 4 homebrews (PVong, Simon, Demônios, PV-1000 Control Test) se compararon después
-con el mismo método y también quedaron idénticos a la referencia: imagen 0 px, RAM igual en
-el cuadro 3000. Simon tiene 1 byte de pila en 0xBFE6 en el cuadro 1000, como Uchotos.
+Los otros 4 homebrews (PVong, Simon, Demônios, PV-1000 Control Test), con el mismo método,
+también son idénticos a la referencia: imagen 0 px, RAM igual en el cuadro 3000. Simon tiene 1 byte de pila en 0xBFE6 en el cuadro 1000, como Uchotos.
 
 ### Sonido (los dos modelos)
 
@@ -87,7 +84,7 @@ En la prueba de ciclos de Par (solo INT1, imagen encendida), el aparato da $57AD
 - Pruebas que usan los archivos de `_referencias/` (fuera de git) y se omiten sin ellos:
   `par_cycle_counts_match_hardware`, `par_split_lines_match_hardware`.
 
-## Modelo MiSTer (9,5)
+## Modelo MiSTer
 
 ### 1. Restos de pila en 4 juegos (hecho)
 
@@ -97,7 +94,7 @@ atraviesa el cambio de cuadro. Con la captura alineada al final de la instrucci�
 0 diferencias en 1.100 cuadros en Dig Dug, Uchotos y Yewdow, y 2 en Ruptus, de
 instrucciones que empiezan justo en el cambio.
 
-## Modelo de hardware (8)
+## Modelo de hardware
 
 ### 2. Robo de bus por ciclo de máquina (no hace falta cambiarlo)
 

@@ -2,12 +2,11 @@
 
 **English** · [Português](libretro.pt-BR.md) · [Español](libretro.es.md)
 
-Guide to turning the emulator into a `mil_capivaras_libretro.so` core that runs inside
-RetroArch. It was the implementation plan and remains the
-guide to the decisions; the current status is in the box below.
+How the emulator becomes the `mil_capivaras_libretro.so` core that runs inside RetroArch,
+and why each decision was made.
 
 
-> **Status (2026-10-17): done.** `libretro` builds `mil_capivaras_libretro.so`
+> **Status:** `libretro` builds `mil_capivaras_libretro.so`
 > (`make libretro`; `make install-libretro` copies `.so` + `.info` to RetroArch's cores
 > folder, read from `retroarch.cfg`). Tested on RetroArch Flatpak 1.22.2: it loads,
 > 224×224 at 59.54 FPS, audio at 48000 Hz, and frame 600 of Dig Dug is byte-for-byte
@@ -39,7 +38,7 @@ and the documentation at <https://docs.libretro.com/development/cores/developing
 
 ## Guidelines
 
-### 1. Workspace (done on 2026-10-17)
+### 1. Workspace
 
 The project is already split up (see [architecture.md](architecture.md)):
 

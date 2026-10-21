@@ -2,11 +2,10 @@
 
 [English](accuracy.md) · **Português** · [Español](accuracy.es.md)
 
-Levantamento de 2026-10-18, conferido no código e nas fontes ([N1]–[N9] do README, o
-documento do Par e o tópico do fórum do NESdev). Notas no início do levantamento: **modelo
-MiSTer 9,5**, **modelo de hardware 8**.
+O que já foi validado e o que ainda falta, conferido no código e nas fontes ([N1]–[N9] do
+README, o documento do Par e o tópico do fórum do NESdev).
 
-## Situação (atualizada em 2026-10-18)
+## Situação
 
 | # | Item | Situação |
 |---|---|---|
@@ -25,10 +24,9 @@ MiSTer 9,5**, **modelo de hardware 8**.
 
 Abaixo, o resultado de cada item resolvido e o detalhe dos que estão em aberto.
 
-## Histórico das melhorias de precisão
+## Como cada parte foi validada
 
-Tudo o que mudou na precisão em 2026-10-17 e 2026-10-18, em ordem, com a prova de cada
-item. O modelo MiSTer é validado contra a simulação do core; o modelo de hardware, contra
+Cada parte da emulação, com a prova. O modelo MiSTer é validado contra a simulação do core; o modelo de hardware, contra
 medições feitas em aparelhos reais por outras pessoas.
 
 ### Modelo MiSTer (a referência validada)
@@ -41,10 +39,9 @@ medições feitas em aparelhos reais por outras pessoas.
 | `HALT` que sai com a interrupção (o `iz80` original travava) | teste `halt_resumes_on_interrupt` |
 | Memória plana de 64 KB, sem espelhos, e a faixa 0xC000–0xFFFF guardando o que é escrito, como no core | regressão 152/152 idêntica (o Battlot escreve acima de 0xDC00) |
 | Os "restos de pilha" explicados: artefato de comparar a RAM no meio de uma instrução | interrupções e instruções idênticas; com a foto alinhada, 0 diferenças em 1.100 quadros (Dig Dug, Uchotos, Yewdow) e 2 no Ruptus, de instruções que começam exatamente na virada |
-| Taxa escrita corrigida: 59,538 Hz (o README dizia 59,527) | teste `bus_stealing_on_hardware` compara as duas taxas |
 
-Os outros 4 homebrews (PVong, Simon, Demônios, PV-1000 Control Test) foram comparados
-depois com o mesmo método e também ficaram idênticos à referência: imagem 0 px, RAM igual
+Os outros 4 homebrews (PVong, Simon, Demônios, PV-1000 Control Test), com o mesmo método,
+também são idênticos à referência: imagem 0 px, RAM igual
 no quadro 3000. O Simon tem 1 byte de pilha em 0xBFE6 no quadro 1000, como o Uchotos.
 
 ### Som (os dois modelos)
@@ -87,7 +84,7 @@ ADD / INC), o Mil Capivaras dá **$57AD / $5702** e o MAME, $56F2 / $563A: o MAM
 - Testes que usam os arquivos de `_referencias/` (fora do git) e são pulados sem eles:
   `par_cycle_counts_match_hardware`, `par_split_lines_match_hardware`.
 
-## Modelo MiSTer (9,5)
+## Modelo MiSTer
 
 ### 1. Restos de pilha em 4 jogos (feito)
 
@@ -96,7 +93,7 @@ diferença vinha de a RAM ser comparada no meio de uma instrução que atravessa
 quadro. Com a foto alinhada ao fim da instrução: 0 diferenças em 1.100 quadros no Dig Dug,
 Uchotos e Yewdow, e 2 no Ruptus, de instruções que começam exatamente na virada.
 
-## Modelo de hardware (8)
+## Modelo de hardware
 
 ### 2. Roubo de barramento por ciclo de máquina (não precisa mudar)
 

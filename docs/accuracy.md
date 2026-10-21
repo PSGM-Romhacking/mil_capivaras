@@ -2,11 +2,10 @@
 
 **English** · [Português](accuracy.pt-BR.md) · [Español](accuracy.es.md)
 
-Survey of 2026-10-18, checked against the code and the sources ([N1]–[N9] in the README,
-Par's document and the NESdev forum thread). Scores at the start of the survey: **MiSTer
-model 9.5**, **hardware model 8**.
+What has been validated and what is still missing, checked against the code and the
+sources ([N1]–[N9] in the README, Par's document and the NESdev forum thread).
 
-## Status (updated on 2026-10-18)
+## Status
 
 | # | Item | Status |
 |---|---|---|
@@ -25,10 +24,9 @@ model 9.5**, **hardware model 8**.
 
 Below, the result of each solved item and the detail of the open ones.
 
-## History of the accuracy improvements
+## How each part was validated
 
-Everything that changed in accuracy on 2026-10-17 and 2026-10-18, in order, with the proof
-for each item. The MiSTer model is validated against the simulation of the core; the
+Each part of the emulation, with its proof. The MiSTer model is validated against the simulation of the core; the
 hardware model, against measurements taken on real consoles by other people.
 
 ### MiSTer model (the validated reference)
@@ -41,11 +39,9 @@ hardware model, against measurements taken on real consoles by other people.
 | `HALT` that exits on the interrupt (the original `iz80` hung) | test `halt_resumes_on_interrupt` |
 | Flat 64 KB memory, with no mirrors, and the range 0xC000–0xFFFF storing what is written, as in the core | regression 152/152 identical (Battlot writes above 0xDC00) |
 | The "stack leftovers" explained: an artifact of comparing the RAM in the middle of an instruction | identical interrupts and instructions; with the snapshot aligned, 0 differences in 1,100 frames (Dig Dug, Uchotos, Yewdow) and 2 in Ruptus, from instructions that start exactly at the boundary |
-| Documented rate corrected: 59.538 Hz (the README said 59.527) | test `bus_stealing_on_hardware` compares the two rates |
 
-The other 4 homebrews (PVong, Simon, Demônios, PV-1000 Control Test) were compared later
-with the same method and are also identical to the reference: picture 0 px, RAM equal at
-frame 3000. Simon has 1 byte of stack at 0xBFE6 at frame 1000, like Uchotos.
+The other 4 homebrews (PVong, Simon, Demônios, PV-1000 Control Test), with the same
+method, are also identical to the reference: picture 0 px, RAM equal at frame 3000. Simon has 1 byte of stack at 0xBFE6 at frame 1000, like Uchotos.
 
 ### Sound (both models)
 
@@ -87,7 +83,7 @@ versions), Mil Capivaras gives **$57AD / $5702** and MAME, $56F2 / $563A: MAME r
 - Tests that use the files in `_referencias/` (outside git) and are skipped without them:
   `par_cycle_counts_match_hardware`, `par_split_lines_match_hardware`.
 
-## MiSTer model (9.5)
+## MiSTer model
 
 ### 1. Stack leftovers in 4 games (done)
 
@@ -97,7 +93,7 @@ straddles the frame boundary. With the snapshot aligned to the end of the instru
 0 differences in 1,100 frames in Dig Dug, Uchotos and Yewdow, and 2 in Ruptus, from
 instructions that start exactly at the boundary.
 
-## Hardware model (8)
+## Hardware model
 
 ### 2. Bus stealing per machine cycle (no change needed)
 
