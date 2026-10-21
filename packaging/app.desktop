@@ -1,0 +1,15 @@
+[Desktop Entry]
+Name=Mil Capivaras
+GenericName=Casio PV-1000 emulator
+GenericName[pt_BR]=Emulador do Casio PV-1000
+GenericName[es]=Emulador de Casio PV-1000
+Comment=Casio PV-1000 emulator
+Comment[pt_BR]=Emulador do Casio PV-1000
+Comment[es]=Emulador de Casio PV-1000
+Keywords=casio;pv-1000;pv1000;emulator;emulation;retro;games;
+Exec=mil_capivaras %f
+Icon=mil_capivaras
+Type=Application
+Terminal=false
+Categories=Game;Emulator;
+StartupWMClass=mil_capivaras

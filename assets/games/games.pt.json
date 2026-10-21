@@ -1,0 +1,111 @@
+{
+  "pooyan": {
+    "description": "A mamãe porca sobe e desce um penhasco num elevador e atira flechas nos lobos que descem pendurados em balões, para proteger os filhotes."
+  },
+  "scobra": {
+    "description": "Pilote um helicóptero por território inimigo, atirando e bombardeando alvos sem deixar o combustível acabar."
+  },
+  "tutankhm": {
+    "description": "Explore a tumba do faraó, um labirinto cheio de criaturas, juntando chaves e tesouros e atirando para os lados."
+  },
+  "amidar": {
+    "description": "Percorra as linhas de uma grade no estilo amidakuji, pintando as bordas e fechando quadrados enquanto foge dos inimigos."
+  },
+  "digdug": {
+    "description": "Cave túneis no subsolo e derrote os Pookas e Fygars enchendo-os de ar ou derrubando pedras sobre eles."
+  },
+  "warpwarp": {
+    "description": "Enfrente os alienígenas Berobero no espaço aberto e dentro do labirinto do warp, onde se usam bombas em vez de tiros."
+  },
+  "turpin": {
+    "description": "Guie uma tartaruga por um labirinto, levando os filhotes para casa enquanto escapa dos besouros."
+  },
+  "pachiufo": {
+    "description": "Um jogo de pachinko."
+  },
+  "fightbug": {
+    "description": "Guie uma joaninha por um labirinto com portas giratórias, comendo os pontos e fugindo dos insetos."
+  },
+  "spcpanic": {
+    "description": "Suba escadas entre plataformas e cave buracos para prender os alienígenas, enterrando-os antes que escapem."
+  },
+  "naugtboy": {
+    "description": "Um menino atira pedras nos monstros e tenta destruir a fortaleza deles."
+  },
+  "excitemj": {
+    "description": "Um jogo de mahjong."
+  },
+  "antiair": {
+    "description": "Destrua todos os OVNIs desviando das bombas e dos blocos que caem. Seus tiros não quebram os blocos, mas as bombas inimigas os fazem sumir."
+  },
+  "ascend": {
+    "description": "Chegue ao último andar desviando dos monstros. Pule para empurrar blocos para cima e prender os monstros."
+  },
+  "awass": {
+    "description": "Pegue todas as bandeiras. Dá para deslizar os andares e religar as escadas."
+  },
+  "battlot": {
+    "description": "Destrua a base inimiga. O jogo acaba se a sua base for destruída três vezes."
+  },
+  "bootskell": {
+    "description": "Empurre blocos contra os monstros para derrotá-los. Cuidado: os monstros também empurram blocos contra você."
+  },
+  "cacorm": {
+    "description": "Trace linhas em volta das estrelas para fazê-las sumir. Elimine todas as estrelas para passar de fase."
+  },
+  "cavit": {
+    "description": "Pegue todos os baús de tesouro. Derrube pedras para derrotar os monstros."
+  },
+  "cracky": {
+    "description": "Pegue todas as estrelas. O chão rachado some depois que você passa, então só dá para atravessá-lo uma vez."
+  },
+  "demonios": {
+    "description": "Uma aventura em texto ilustrada, baseada no conto de 1893 do escritor brasileiro Aluísio Azevedo.",
+    "notes": "Lançado em inglês, português e espanhol, cada idioma numa ROM."
+  },
+  "hopman": {
+    "description": "Chegue ao objetivo na borda direita. Não é preciso pegar todas as bandeiras."
+  },
+  "lift": {
+    "description": "Pegue todas as bandeiras desviando dos monstros. Use os elevadores para subir de andar."
+  },
+  "mazy": {
+    "description": "Encontre a saída em algum lugar do labirinto. Pegue facas e atire-as nos monstros que estiverem no caminho."
+  },
+  "mazy2": {
+    "description": "Encontre a saída em algum lugar do labirinto. Pegue facas e atire-as nos monstros que estiverem no caminho."
+  },
+  "mieyen": {
+    "description": "Derrote todos os monstros invisíveis. As migalhas que eles comem desaparecem, o que entrega onde eles estão."
+  },
+  "neuras": {
+    "description": "Pegue cartas e atire-as; enfileirar cartas com o mesmo número as faz sumir. Elimine todas as cartas."
+  },
+  "osotos": {
+    "description": "Pegue todas as estrelas. Acerte os monstros com blocos para derrotá-los."
+  },
+  "control_test": {
+    "description": "ROM de teste de Péricles S.: cada botão dos dois controles acende enquanto é apertado, com um bipe diferente para cada controle; a matriz crua do joystick e um contador de quadros aparecem na tela. Código-fonte: github.com/PSGM-Romhacking/pv-1000_control_test_rom."
+  },
+  "pvong": {
+    "description": "Pong para 2 jogadores de joe_k, com a bola movida pixel a pixel por padrões em RAM e música do driver pvbanjo. Licença MIT. Código-fonte: github.com/joffb/pvong."
+  },
+  "ruptus": {
+    "description": "Destrua todas as bases inimigas. Uma barreira no caminho some quando você destrói uma das pontas dela."
+  },
+  "simon": {
+    "description": "O jogo da memória Simon (1978), de KashtPR: repita a sequência de cores com o direcional (cima verde, baixo azul, esquerda amarelo, direita vermelho), para 1 ou 2 jogadores. Escrito em C com o z88dk; publicado no fórum do NESdev."
+  },
+  "svellas": {
+    "description": "Siga os caminhos sobre as fileiras de painéis e pegue todas as estrelas. Mover os painéis religa os caminhos e permite passar entre painéis separados."
+  },
+  "swordwrk": {
+    "description": "Pegue todos os baús de tesouro. Pegar itens aumenta o alcance do seu ataque."
+  },
+  "uchotos": {
+    "description": "Pegue todas as estrelas. Dá para andar por cima dos monstros que você derrubou a tiros."
+  },
+  "yewdow": {
+    "description": "Coloque setas para guiar o carro por todas as bandeiras. Você perde se o carro sair da tela ou bater numa pedra."
+  }
+}

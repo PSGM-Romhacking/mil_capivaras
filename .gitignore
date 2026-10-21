@@ -1,0 +1,40 @@
+# --- ROMs: do not redistribute ---
+# Commercial cartridges (Casio/Namco/Konami…) never go into the repository.
+# roms/: Inufuto homebrews — free download, but with no stated license
+# (all rights reserved); download from http://inufuto.web.fc2.com/8bit/
+roms/
+/Casio - PV-1000/
+*.zip
+*.7z
+*.bin
+*.rom
+*.pv1
+
+# --- asset generators (icon, font subset, bezels, homebrew covers); not published.
+# The homebrew covers are made over Casio box art and will get their own repository ---
+/tools/
+
+# --- build ---
+/build/
+/dist/
+target/
+/mil-capivaras-*-linux-*
+
+# --- test/validation outputs (--shot, --dump-ram) ---
+*.ppm
+*.ram
+
+# --- Python caches (generator scripts) ---
+__pycache__/
+*.pyc
+
+# --- local/personal ---
+Mil Capivaras.desktop
+.directory
+retomar-conversa.sh
+.vscode/
+.idea/
+*.swp
+
+# --- local copies of third-party references (see _referencias/LEIA-ME.md) ---
+/_referencias/

@@ -1,0 +1,111 @@
+{
+  "pooyan": {
+    "description": "Mama pig rides a gondola up and down a cliff, shooting arrows at the wolves that float down on balloons to protect her piglets."
+  },
+  "scobra": {
+    "description": "Fly a helicopter through enemy territory, shooting and bombing targets while keeping an eye on the fuel."
+  },
+  "tutankhm": {
+    "description": "Explore the pharaoh's tomb, a maze full of creatures, collecting keys and treasures and shooting left and right."
+  },
+  "amidar": {
+    "description": "Trace the lines of an amidakuji-style grid, painting its edges and filling boxes while avoiding the enemies."
+  },
+  "digdug": {
+    "description": "Dig tunnels underground and defeat the Pookas and Fygars by inflating them or dropping rocks on them."
+  },
+  "warpwarp": {
+    "description": "Fight the Berobero aliens in open space and inside the warp maze, where you use bombs instead of shots."
+  },
+  "turpin": {
+    "description": "Guide a turtle through a maze, carrying the baby turtles home while escaping the beetles."
+  },
+  "pachiufo": {
+    "description": "A pachinko game."
+  },
+  "fightbug": {
+    "description": "Guide a ladybug through a maze with revolving gates, eating the dots and avoiding the insects."
+  },
+  "spcpanic": {
+    "description": "Climb ladders between platforms and dig holes to trap the aliens, then bury them before they climb out."
+  },
+  "naugtboy": {
+    "description": "A boy throws rocks at the monsters and tries to destroy their fortress."
+  },
+  "excitemj": {
+    "description": "A mahjong game."
+  },
+  "antiair": {
+    "description": "Destroy all the UFOs while dodging the falling bombs and blocks. Your shots can't break the blocks, but enemy bombs make them disappear."
+  },
+  "ascend": {
+    "description": "Reach the top floor while avoiding the monsters. Jump to push blocks up and trap the monsters."
+  },
+  "awass": {
+    "description": "Collect all the flags. You can scroll the floors to reconnect the ladders."
+  },
+  "battlot": {
+    "description": "Destroy the enemy base. The game is over if your own base is destroyed three times."
+  },
+  "bootskell": {
+    "description": "Push blocks into the monsters to defeat them. Watch out: the monsters push blocks at you too."
+  },
+  "cacorm": {
+    "description": "Draw lines to enclose the stars and make them vanish. Clear all the stars to finish the stage."
+  },
+  "cavit": {
+    "description": "Collect all the treasure chests. Drop rocks to defeat the monsters."
+  },
+  "cracky": {
+    "description": "Collect all the stars. Cracked floors vanish once you walk over them, so each can be crossed only once."
+  },
+  "demonios": {
+    "description": "An illustrated text adventure based on the 1893 short story by the Brazilian writer Aluísio Azevedo.",
+    "notes": "Published in English, Portuguese and Spanish, each in its own ROM."
+  },
+  "hopman": {
+    "description": "Reach the goal at the right edge. You don't need to collect all the flags."
+  },
+  "lift": {
+    "description": "Collect all the flags while avoiding the monsters. Ride the lifts to reach the upper floors."
+  },
+  "mazy": {
+    "description": "Find the exit somewhere in the maze. Pick up knives and throw them at the monsters in your way."
+  },
+  "mazy2": {
+    "description": "Find the exit somewhere in the maze. Pick up knives and throw them at the monsters in your way."
+  },
+  "mieyen": {
+    "description": "Defeat all the invisible monsters. The breadcrumbs they eat disappear, which gives away where they are."
+  },
+  "neuras": {
+    "description": "Pick up cards and throw them; lining up cards with the same number makes them disappear. Clear all the cards."
+  },
+  "osotos": {
+    "description": "Collect all the stars. Hit the monsters with blocks to defeat them."
+  },
+  "control_test": {
+    "description": "Test ROM by Péricles S.: each button of both controllers lights up while it is held, with a different beep for each controller; the raw joystick matrix and a frame counter are shown. Source: github.com/PSGM-Romhacking/pv-1000_control_test_rom."
+  },
+  "pvong": {
+    "description": "2-player Pong by joe_k, with the ball moved pixel by pixel through patterns in RAM and music by the pvbanjo driver. MIT license. Source: github.com/joffb/pvong."
+  },
+  "ruptus": {
+    "description": "Destroy all the enemy bases. A blocking barrier disappears when you destroy either of its ends."
+  },
+  "simon": {
+    "description": "The Simon memory game (1978), by KashtPR: repeat the color sequence with the directions (up green, down blue, left yellow, right red), for 1 or 2 players. Written in C with z88dk; posted on the NESdev forum."
+  },
+  "svellas": {
+    "description": "Follow the paths on the rows of panels and collect all the stars. Moving the panels reconnects the paths and lets you cross between separate panels."
+  },
+  "swordwrk": {
+    "description": "Collect all the treasure chests. Picking up items extends your attack range."
+  },
+  "uchotos": {
+    "description": "Collect all the stars. You can walk across monsters you have shot down."
+  },
+  "yewdow": {
+    "description": "Place arrows to steer the car through all the flags. You fail if the car leaves the screen or hits a rock."
+  }
+}

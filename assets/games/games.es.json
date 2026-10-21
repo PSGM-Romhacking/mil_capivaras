@@ -1,0 +1,111 @@
+{
+  "pooyan": {
+    "description": "Mamá cerdita sube y baja por un acantilado en un elevador y dispara flechas a los lobos que bajan colgados de globos para proteger a sus cerditos."
+  },
+  "scobra": {
+    "description": "Pilota un helicóptero por territorio enemigo, disparando y bombardeando objetivos sin quedarte sin combustible."
+  },
+  "tutankhm": {
+    "description": "Explora la tumba del faraón, un laberinto lleno de criaturas, recogiendo llaves y tesoros y disparando a los lados."
+  },
+  "amidar": {
+    "description": "Recorre las líneas de una cuadrícula al estilo amidakuji, pintando los bordes y cerrando cuadros mientras huyes de los enemigos."
+  },
+  "digdug": {
+    "description": "Excava túneles bajo tierra y derrota a los Pookas y Fygars inflándolos o dejando caer rocas sobre ellos."
+  },
+  "warpwarp": {
+    "description": "Enfréntate a los alienígenas Berobero en el espacio abierto y dentro del laberinto warp, donde se usan bombas en vez de disparos."
+  },
+  "turpin": {
+    "description": "Guía a una tortuga por un laberinto, llevando a las crías a casa mientras escapas de los escarabajos."
+  },
+  "pachiufo": {
+    "description": "Un juego de pachinko."
+  },
+  "fightbug": {
+    "description": "Guía a una mariquita por un laberinto con puertas giratorias, comiendo los puntos y esquivando a los insectos."
+  },
+  "spcpanic": {
+    "description": "Sube escaleras entre plataformas y cava agujeros para atrapar a los alienígenas, enterrándolos antes de que escapen."
+  },
+  "naugtboy": {
+    "description": "Un niño lanza piedras a los monstruos e intenta destruir su fortaleza."
+  },
+  "excitemj": {
+    "description": "Un juego de mahjong."
+  },
+  "antiair": {
+    "description": "Destruye todos los ovnis esquivando las bombas y los bloques que caen. Tus disparos no rompen los bloques, pero las bombas enemigas los hacen desaparecer."
+  },
+  "ascend": {
+    "description": "Llega al último piso esquivando a los monstruos. Salta para empujar bloques hacia arriba y atrapar a los monstruos."
+  },
+  "awass": {
+    "description": "Recoge todas las banderas. Puedes desplazar los pisos para reconectar las escaleras."
+  },
+  "battlot": {
+    "description": "Destruye la base enemiga. La partida termina si tu base es destruida tres veces."
+  },
+  "bootskell": {
+    "description": "Empuja bloques contra los monstruos para derrotarlos. Cuidado: los monstruos también te lanzan bloques."
+  },
+  "cacorm": {
+    "description": "Traza líneas alrededor de las estrellas para hacerlas desaparecer. Elimina todas las estrellas para superar la fase."
+  },
+  "cavit": {
+    "description": "Recoge todos los cofres del tesoro. Deja caer rocas para derrotar a los monstruos."
+  },
+  "cracky": {
+    "description": "Recoge todas las estrellas. El suelo agrietado desaparece al pasar por encima, así que solo se puede cruzar una vez."
+  },
+  "demonios": {
+    "description": "Una aventura de texto ilustrada, basada en el cuento de 1893 del escritor brasileño Aluísio Azevedo.",
+    "notes": "Publicado en inglés, portugués y español, cada idioma en su propia ROM."
+  },
+  "hopman": {
+    "description": "Llega a la meta en el borde derecho. No hace falta recoger todas las banderas."
+  },
+  "lift": {
+    "description": "Recoge todas las banderas esquivando a los monstruos. Usa los ascensores para subir de piso."
+  },
+  "mazy": {
+    "description": "Encuentra la salida en algún lugar del laberinto. Recoge cuchillos y lánzalos a los monstruos que te estorben."
+  },
+  "mazy2": {
+    "description": "Encuentra la salida en algún lugar del laberinto. Recoge cuchillos y lánzalos a los monstruos que te estorben."
+  },
+  "mieyen": {
+    "description": "Derrota a todos los monstruos invisibles. Las migas que comen desaparecen, lo que delata dónde están."
+  },
+  "neuras": {
+    "description": "Recoge cartas y lánzalas; alinear cartas con el mismo número las hace desaparecer. Elimina todas las cartas."
+  },
+  "osotos": {
+    "description": "Recoge todas las estrellas. Golpea a los monstruos con bloques para derrotarlos."
+  },
+  "control_test": {
+    "description": "ROM de prueba de Péricles S.: cada botón de los dos mandos se ilumina mientras se mantiene pulsado, con un pitido distinto para cada mando; se muestran la matriz cruda del joystick y un contador de cuadros. Código fuente: github.com/PSGM-Romhacking/pv-1000_control_test_rom."
+  },
+  "pvong": {
+    "description": "Pong para 2 jugadores de joe_k, con la pelota movida píxel a píxel mediante patrones en RAM y música del driver pvbanjo. Licencia MIT. Código fuente: github.com/joffb/pvong."
+  },
+  "ruptus": {
+    "description": "Destruye todas las bases enemigas. Una barrera que bloquea el paso desaparece al destruir cualquiera de sus extremos."
+  },
+  "simon": {
+    "description": "El juego de memoria Simon (1978), de KashtPR: repite la secuencia de colores con las direcciones (arriba verde, abajo azul, izquierda amarillo, derecha rojo), para 1 o 2 jugadores. Escrito en C con z88dk; publicado en el foro de NESdev."
+  },
+  "svellas": {
+    "description": "Sigue los caminos sobre las filas de paneles y recoge todas las estrellas. Mover los paneles reconecta los caminos y permite cruzar entre paneles separados."
+  },
+  "swordwrk": {
+    "description": "Recoge todos los cofres del tesoro. Recoger objetos aumenta el alcance de tu ataque."
+  },
+  "uchotos": {
+    "description": "Recoge todas las estrellas. Puedes caminar sobre los monstruos que hayas derribado a tiros."
+  },
+  "yewdow": {
+    "description": "Coloca flechas para guiar el coche por todas las banderas. Pierdes si el coche sale de la pantalla o choca con una roca."
+  }
+}

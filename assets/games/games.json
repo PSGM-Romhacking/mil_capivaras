@@ -1,0 +1,543 @@
+{
+  "pooyan": {
+    "title": "Pooyan",
+    "alt_title": "プーヤン",
+    "year": "1982",
+    "publisher": "Casio",
+    "developer": "Konami (arcade, 1982)",
+    "serial": "GPA-101",
+    "roms": [
+      {
+        "name": "Pooyan (Japan)",
+        "crc": "bd6edc48",
+        "size": 8192
+      }
+    ]
+  },
+  "scobra": {
+    "title": "Super Cobra",
+    "alt_title": "スーパーコブラ",
+    "year": "1981",
+    "publisher": "Casio",
+    "developer": "Konami (arcade, 1981)",
+    "serial": "GPA-102",
+    "roms": [
+      {
+        "name": "Super Cobra (Japan)",
+        "crc": "cdffc2cd",
+        "size": 8192
+      }
+    ]
+  },
+  "tutankhm": {
+    "title": "Tutankham",
+    "alt_title": "ツターンカーム",
+    "year": "1982",
+    "publisher": "Casio",
+    "developer": "Konami (arcade, 1982)",
+    "serial": "GPA-103",
+    "roms": [
+      {
+        "name": "Tutankham (Japan)",
+        "crc": "a0b606d8",
+        "size": 8192
+      }
+    ]
+  },
+  "amidar": {
+    "title": "Amidar",
+    "alt_title": "アミダー",
+    "year": "1982",
+    "publisher": "Casio",
+    "developer": "Konami (arcade, 1981)",
+    "serial": "GPA-104",
+    "roms": [
+      {
+        "name": "Amidar (Japan)",
+        "crc": "c82628cc",
+        "size": 8192
+      }
+    ]
+  },
+  "digdug": {
+    "title": "Dig Dug",
+    "alt_title": "ディグダグ",
+    "year": "1982",
+    "publisher": "Casio",
+    "developer": "Namco (arcade, 1982)",
+    "serial": "GPA-105",
+    "roms": [
+      {
+        "name": "Dig Dug (Japan)",
+        "crc": "a94f02fa",
+        "size": 16384
+      }
+    ]
+  },
+  "warpwarp": {
+    "title": "Warp & Warp",
+    "alt_title": "ワープ&ワープ",
+    "year": "1981",
+    "publisher": "Casio",
+    "developer": "Namco (arcade, 1981)",
+    "serial": "GPA-106",
+    "roms": [
+      {
+        "name": "Warp & Warp (Japan)",
+        "crc": "2a0d4ad9",
+        "size": 8192
+      }
+    ]
+  },
+  "turpin": {
+    "title": "Turpin",
+    "alt_title": "ターピン",
+    "year": "1981?",
+    "publisher": "Casio",
+    "developer": "Konami (arcade \"Turtles\", 1981)",
+    "serial": "GPA-107",
+    "roms": [
+      {
+        "name": "Turpin (Japan)",
+        "crc": "a3aef98d",
+        "size": 8192
+      }
+    ]
+  },
+  "pachiufo": {
+    "title": "Pachinko - UFO",
+    "alt_title": "パチンコUFO",
+    "year": "1982",
+    "publisher": "Casio",
+    "serial": "GPA-109",
+    "roms": [
+      {
+        "name": "Pachinko-UFO (Japan)",
+        "crc": "9ee981ab",
+        "size": 16384
+      }
+    ]
+  },
+  "fightbug": {
+    "title": "Fighting Bug",
+    "alt_title": "ファイティング バグ",
+    "year": "1982",
+    "publisher": "Casio",
+    "developer": "Universal (arcade \"Lady Bug\", 1981)",
+    "serial": "GPA-110",
+    "roms": [
+      {
+        "name": "Fighting Bug (Japan)",
+        "crc": "84986255",
+        "size": 8192
+      }
+    ]
+  },
+  "spcpanic": {
+    "title": "Space Panic",
+    "alt_title": "スペースパニック",
+    "year": "1981?",
+    "publisher": "Casio",
+    "developer": "Universal (arcade, 1980)",
+    "serial": "GPA-111",
+    "roms": [
+      {
+        "name": "Space Panic (Japan)",
+        "crc": "23547111",
+        "size": 8192
+      }
+    ]
+  },
+  "naugtboy": {
+    "title": "Naughty Boy",
+    "alt_title": "ノーティーボーイ",
+    "year": "198?",
+    "publisher": "Casio",
+    "developer": "Jaleco (arcade, 1982)",
+    "serial": "GPA-112",
+    "roms": [
+      {
+        "name": "Naughty Boy (Japan)",
+        "crc": "43a13e99",
+        "size": 8192
+      }
+    ]
+  },
+  "dirtychm": {
+    "title": "Dirty Chameleon",
+    "alt_title": "ダーティー カメレオン",
+    "year": "198?",
+    "publisher": "Casio",
+    "developer": "Jaleco",
+    "serial": "GPA-114",
+    "roms": [
+      {
+        "name": "Dirty Chameleon (Japan)",
+        "crc": "8e7fb358",
+        "size": 8192
+      }
+    ]
+  },
+  "excitemj": {
+    "title": "Excite Mahjong",
+    "alt_title": "エキサイト麻雀",
+    "year": "1982",
+    "publisher": "Casio",
+    "serial": "GPA-115",
+    "roms": [
+      {
+        "name": "Excite Mahjong (Japan)",
+        "crc": "0d2f829c",
+        "size": 16384
+      }
+    ]
+  },
+  "aerial": {
+    "title": "Aerial",
+    "year": "2021",
+    "publisher": "Inufuto",
+    "developer": "Inufuto",
+    "roms": [
+      {
+        "name": "Aerial (World) (Aftermarket) (Unl)",
+        "crc": "9d3ddb26",
+        "size": 16384
+      }
+    ]
+  },
+  "antiair": {
+    "title": "AntiAir",
+    "year": "2024",
+    "publisher": "Inufuto",
+    "developer": "Inufuto",
+    "roms": [
+      {
+        "name": "AntiAir (World) (Aftermarket) (Unl)",
+        "crc": "1478db1a",
+        "size": 16384
+      }
+    ]
+  },
+  "ascend": {
+    "title": "Ascend",
+    "year": "2022",
+    "publisher": "Inufuto",
+    "developer": "Inufuto",
+    "roms": [
+      {
+        "name": "Ascend (World) (Aftermarket) (Unl)",
+        "crc": "f9f52261",
+        "size": 16384
+      }
+    ]
+  },
+  "awass": {
+    "title": "Awass",
+    "year": "2026",
+    "publisher": "Inufuto",
+    "developer": "Inufuto",
+    "roms": [
+      {
+        "name": "Awass (World) (Aftermarket) (Unl)",
+        "crc": "a09322cc",
+        "size": 13781
+      }
+    ]
+  },
+  "battlot": {
+    "title": "Battlot",
+    "year": "2022",
+    "publisher": "Inufuto",
+    "developer": "Inufuto",
+    "roms": [
+      {
+        "name": "Battlot (World) (Aftermarket) (Unl)",
+        "crc": "48c78955",
+        "size": 16384
+      }
+    ]
+  },
+  "bootskell": {
+    "title": "Bootskell",
+    "year": "2022",
+    "publisher": "Inufuto",
+    "developer": "Inufuto",
+    "roms": [
+      {
+        "name": "Bootskell (World) (Aftermarket) (Unl)",
+        "crc": "8e3222fe",
+        "size": 16384
+      }
+    ]
+  },
+  "cacorm": {
+    "title": "Cacorm",
+    "year": "2022",
+    "publisher": "Inufuto",
+    "developer": "Inufuto",
+    "roms": [
+      {
+        "name": "Cacorm (World) (Aftermarket) (Unl)",
+        "crc": "adfdaf22",
+        "size": 16384
+      }
+    ]
+  },
+  "cavit": {
+    "title": "Cavit",
+    "year": "2022",
+    "publisher": "Inufuto",
+    "developer": "Inufuto",
+    "roms": [
+      {
+        "name": "Cavit (World) (Aftermarket) (Unl)",
+        "crc": "e393d6db",
+        "size": 16384
+      }
+    ]
+  },
+  "cracky": {
+    "title": "Cracky",
+    "year": "2023",
+    "publisher": "Inufuto",
+    "developer": "Inufuto",
+    "roms": [
+      {
+        "name": "Cracky (World) (Aftermarket) (Unl)",
+        "crc": "8abdb1f5",
+        "size": 16384
+      }
+    ]
+  },
+  "demonios": {
+    "title": "Demônios",
+    "year": "2026",
+    "publisher": "Péricles S.",
+    "developer": "Péricles S.",
+    "players": 1,
+    "roms": [
+      {
+        "name": "Demonios (World) (En) (Aftermarket) (Unl)",
+        "crc": "b0b1390b",
+        "size": 32768
+      },
+      {
+        "name": "Demonios (World) (Es) (Aftermarket) (Unl)",
+        "crc": "7f8f2ccf",
+        "size": 32768
+      },
+      {
+        "name": "Demonios (World) (Pt) (Aftermarket) (Unl)",
+        "crc": "b87e2293",
+        "size": 32768
+      }
+    ]
+  },
+  "guntus": {
+    "title": "Guntus",
+    "year": "2022",
+    "publisher": "Inufuto",
+    "developer": "Inufuto",
+    "roms": [
+      {
+        "name": "Guntus (World) (Aftermarket) (Unl)",
+        "crc": "8cfe7310",
+        "size": 16384
+      }
+    ]
+  },
+  "hopman": {
+    "title": "Hopman",
+    "year": "2023",
+    "publisher": "Inufuto",
+    "developer": "Inufuto",
+    "roms": [
+      {
+        "name": "Hopman (World) (Aftermarket) (Unl)",
+        "crc": "6f72e9ff",
+        "size": 16384
+      }
+    ]
+  },
+  "lift": {
+    "title": "Lift",
+    "year": "2021",
+    "publisher": "Inufuto",
+    "developer": "Inufuto",
+    "roms": [
+      {
+        "name": "Lift (World) (Aftermarket) (Unl)",
+        "crc": "59a507c5",
+        "size": 16384
+      }
+    ]
+  },
+  "mazy": {
+    "title": "Mazy",
+    "year": "2021",
+    "publisher": "Inufuto",
+    "developer": "Inufuto",
+    "roms": [
+      {
+        "name": "Mazy (World) (Aftermarket) (Unl)",
+        "crc": "a7aea98b",
+        "size": 16384
+      }
+    ]
+  },
+  "mazy2": {
+    "title": "Mazy2",
+    "year": "2025",
+    "publisher": "Inufuto",
+    "developer": "Inufuto",
+    "roms": [
+      {
+        "name": "Mazy2 (World) (Aftermarket) (Unl)",
+        "crc": "6e6f9694",
+        "size": 16384
+      }
+    ]
+  },
+  "mieyen": {
+    "title": "Mieyen",
+    "year": "2025",
+    "publisher": "Inufuto",
+    "developer": "Inufuto",
+    "roms": [
+      {
+        "name": "Mieyen (World) (Aftermarket) (Unl)",
+        "crc": "c5fbd695",
+        "size": 16384
+      }
+    ]
+  },
+  "neuras": {
+    "title": "Neuras",
+    "year": "2022",
+    "publisher": "Inufuto",
+    "developer": "Inufuto",
+    "roms": [
+      {
+        "name": "Neuras (World) (Aftermarket) (Unl)",
+        "crc": "208817d1",
+        "size": 16384
+      }
+    ]
+  },
+  "osotos": {
+    "title": "Osotos",
+    "year": "2024",
+    "publisher": "Inufuto",
+    "developer": "Inufuto",
+    "roms": [
+      {
+        "name": "Osotos (World) (Aftermarket) (Unl)",
+        "crc": "629ba7e5",
+        "size": 16384
+      }
+    ]
+  },
+  "control_test": {
+    "title": "PV-1000 Control Test",
+    "year": "2026",
+    "publisher": "Péricles S.",
+    "developer": "Péricles S.",
+    "roms": [
+      {
+        "name": "PV-1000 Control Test (World) (Aftermarket) (Unl)",
+        "crc": "32c551cf",
+        "size": 8192
+      }
+    ]
+  },
+  "pvong": {
+    "title": "PVong",
+    "year": "2025",
+    "publisher": "joe_k",
+    "developer": "joe_k",
+    "players": 2,
+    "roms": [
+      {
+        "name": "PVong (World) (Aftermarket) (Unl)",
+        "crc": "d575c7b9"
+      }
+    ]
+  },
+  "ruptus": {
+    "title": "Ruptus",
+    "year": "2021",
+    "publisher": "Inufuto",
+    "developer": "Inufuto",
+    "roms": [
+      {
+        "name": "Ruptus (World) (Aftermarket) (Unl)",
+        "crc": "f616befc",
+        "size": 16384
+      }
+    ]
+  },
+  "simon": {
+    "title": "Simon",
+    "year": "2025",
+    "publisher": "KashtPR",
+    "developer": "KashtPR",
+    "roms": [
+      {
+        "name": "Simon (World) (Aftermarket) (Unl)",
+        "crc": "62d0e79c"
+      }
+    ]
+  },
+  "svellas": {
+    "title": "Svellas",
+    "year": "2025",
+    "publisher": "Inufuto",
+    "developer": "Inufuto",
+    "roms": [
+      {
+        "name": "Svellas (World) (Aftermarket) (Unl)",
+        "crc": "27c8d8a8",
+        "size": 11342
+      }
+    ]
+  },
+  "swordwrk": {
+    "title": "SwordWork",
+    "year": "2026",
+    "publisher": "Inufuto",
+    "developer": "Inufuto",
+    "roms": [
+      {
+        "name": "SwordWork (World) (Aftermarket) (Unl)",
+        "crc": "5e36a9dc",
+        "size": 16384
+      }
+    ]
+  },
+  "uchotos": {
+    "title": "Uchotos",
+    "year": "2026",
+    "publisher": "Inufuto",
+    "developer": "Inufuto",
+    "roms": [
+      {
+        "name": "Uchotos (World) (Aftermarket) (Unl)",
+        "crc": "3ef1e5c3",
+        "size": 10550
+      }
+    ]
+  },
+  "yewdow": {
+    "title": "Yewdow",
+    "year": "2023",
+    "publisher": "Inufuto",
+    "developer": "Inufuto",
+    "roms": [
+      {
+        "name": "Yewdow (World) (Aftermarket) (Unl)",
+        "crc": "a9c8b257",
+        "size": 16384
+      }
+    ]
+  }
+}

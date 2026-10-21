@@ -1,0 +1,14 @@
+[package]
+name = "mil_capivaras_libretro"
+description = "Mil Capivaras as a libretro core: pv1000-core behind the libretro C API (mil_capivaras_libretro.so)"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+emu-api.workspace = true
+pv1000-core.workspace = true
