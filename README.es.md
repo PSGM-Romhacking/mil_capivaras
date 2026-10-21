@@ -31,7 +31,7 @@ en [Referencias](#13-referencias). Donde las fuentes discrepan, la divergencia s
 
 | | |
 |---|---|
-| Precisión | **Alta** en la escala de la Emulation General Wiki: imagen y RAM **idénticas, píxel a píxel y byte a byte**, al core de MiSTer simulado en todos los juegos probados; el sonido sigue la documentación del hardware real, una octava por debajo de MiSTer ([sección 9](#9-precisión-y-validación)) |
+| Precisión | **Alta** en la escala de la Emulation General Wiki: imagen **idéntica píxel a píxel** al core de MiSTer simulado en todos los cuadros probados, y RAM **idéntica byte a byte** en el cuadro 3000, en todos los juegos probados; el sonido sigue la documentación del hardware real, una octava por debajo de MiSTer ([sección 9](#9-precisión-y-validación)) |
 | Compatibilidad | 13/13 juegos comerciales y 26/26 homebrews: imagen y RAM idénticas a la referencia en el cuadro 3000 ([sección 10](#10-compatibilidad)) |
 | Velocidad | ~7.400 cuadros/s en un Ryzen 7 8700G (~125× el tiempo real) |
 | Plataformas | Linux (Wayland y X11, AppImage), Windows y FreeBSD; core libretro para RetroArch en Linux, Windows y FreeBSD |
@@ -144,7 +144,7 @@ el circuito del mando, el conector) vienen de las mediciones de NESdev [N1]–[N
   japonesa, 240×192 [W2]. En el core de MiSTer el área visible va del hc 17 al 239, es decir,
   **223 píxeles** más 1 columna negra (224), sin las 2 columnas de tiles de cada lado.
 - **Borde:** en el aparato real, el borde de color que usan algunos juegos queda **arriba y
-  abajo**. MAME lo pone a los lados para que quepa en 4:3; el autor del core lo verificó en videos
+  abajo**. MAME lo ponía a los lados hasta la versión 267; el autor del core lo verificó en videos
   de la consola real [F1].
 
 ### La placa y el chip
@@ -313,7 +313,7 @@ devuelve el contenido de la RAM en esa dirección: es un efecto del bus del core
 | **FB** | **sonido:** bit 1 = encendido (0 silencia los 3 canales); bit 0 = modo XOR (el canal 1 toca 1 ⊕ 2, el canal 2 toca 2 ⊕ 3) [N2]. El core de MiSTer ignora este puerto | el último valor escrito |
 | **FC** | — | **estado:** bit 0 = "cuadro nuevo", pasa a 1 en la línea Y=195 y se pone a cero al leerlo; bit 1 = hay líneas de la matriz del joystick aún no leídas |
 | **FD** | **selecciona las líneas** de la matriz del joystick (bits 0–3) y marca las 4 como pendientes | **lee la línea seleccionada** (4 bits) y la marca como leída |
-| FE | guardado, sin efecto en el core (en MAME, dirección del PCG) | el último valor escrito |
+| FE | guardado, sin efecto en el core ni en MAME; en el aparato, dirección del mapa y del PCG ([sección 3](#3-cómo-difieren-las-implementaciones)) | el último valor escrito |
 | **FF** | **video:** bit 5 = banco de patrones de la ROM; bit 4 = forzar patrones de la ROM también en los tiles 0xE0–0xFF; bits 2–0 = color del borde (B, G, R) | el último valor escrito |
 
 ### Video
@@ -368,6 +368,7 @@ cuadro 2).
   en la línea 259.
 
 **Proporción:** Mil Capivaras muestra los píxeles cuadrados (1:1), como el core de MiSTer.
+La opción **Imagen: TV** usa la del aparato, 48:35 ([sección 3](#los-dos-modelos)).
 
 ### Sonido
 
@@ -557,9 +558,9 @@ referencia y entender las divergencias:
 | Cuadro | 59,538 Hz; 228,6 ciclos × 263 líneas | 230,4 × 262 | **60 Hz**, modelo simplificado de 67 eventos de línea | 228 × 262 | igual que MiSTer |
 | Interrupciones | 13 pulsos por cuadro, sin reconocimiento | 16, habilitación en FC, reconocimiento en FD | 16 por cuadro (eventos 51–66) | nivel en las líneas 196–256, se limpia al leer FC | igual que MiSTer |
 | Matriz del joystick | prioridad a la primera línea seleccionada | OR de las líneas seleccionadas | OR de las líneas seleccionadas | OR de las líneas | igual que MiSTer |
-| PCG / banco | bit 5 de FF = 1 bit de banco; PCG fijo en 0xBC00 | bits 7–5 de FF; FE = dirección del PCG | bit 5 de FF = banco; **FE** = dirección del mapa (y del PCG, +0x400) | bits 7–5; FE | igual que MiSTer |
+| PCG / banco | bit 5 de FF = 1 bit de banco; PCG fijo en 0xBC00 | bits 7–5 de FF; FE ignorada (mapa y PCG fijos en 0xB800) | bit 5 de FF = banco; **FE** = dirección del mapa (y del PCG, +0x400) | bits 7–5; FE | igual que MiSTer |
 | Imagen | leída píxel a píxel | por línea | **dibujada de una vez por cuadro**, columnas 2–29 | — | píxel a píxel, como MiSTer |
-| Borde | arriba y abajo | a los lados | sin borde | sin borde | igual que MiSTer |
+| Borde | arriba y abajo | arriba y abajo (a los lados hasta la 267) | sin borde | sin borde | igual que MiSTer |
 | Sonido | se invierte cada 63−n pasos de 513: **17.444/(63−n) Hz** | divisor 1024, mezclador en FB: ~una octava por debajo | **≈ 9.089/(63−n) Hz**: ~una octava por debajo | mezclador en FB | **8.739/(63−n) Hz**, volúmenes y puerto FB del hardware [N2] |
 | Juegos sin problemas conocidos | 13/13 | 13/13 en MAME 0.289 (la lista aún marca 6 como `supported="no"`, desactualizada: ver abajo) | no evaluado | — | 13/13 |
 
@@ -570,7 +571,10 @@ marcaba 6 cartuchos como no soportados (Dig Dug, Pachinko-UFO, Fighting Bug, Spa
 Naughty Boy, Dirty Chameleon) [M2]. **La marca está desactualizada:** probados el 2026-10-17
 en MAME 0.289 (la versión más reciente), los 6 llegan a la partida y puntúan; las correcciones de
 interrupción, lectura de puertos y robo de bus de julio y agosto de 2024 los hicieron
-funcionar, pero la lista no se corrigió. MAME es hoy el más fiel al hardware ([sección 3](#el-core-de-mister-y-el-hardware-real)).
+funcionar, pero la lista no se corrigió. Entre los otros emuladores, MAME es hoy el más fiel
+al hardware ([abajo](#el-core-de-mister-y-el-hardware-real)); el modelo de hardware de Mil
+Capivaras se acerca más en las mediciones hechas en el aparato
+([sección 9](#validación-contra-la-consola-las-mediciones-de-par)).
 fv1000 [V1] quedó fuera del cuadro: es un experimento en FPGA, en SpinalHDL (wel97459, 2023),
 solo con el video, sin CPU ni E/S. El único dato útil que tiene es el cuadro que supone,
 227,2 ciclos × 263 líneas, con una imagen de prueba en el borde.
@@ -691,8 +695,8 @@ estirar.
 
 **El modelo MiSTer no cambió:** la temporización de la consola solo vale en el modelo de
 hardware. En el modelo MiSTer la CPU nunca se detiene y el cuadro es de 59,538 Hz, y la
-comparación byte a byte con el core sigue valiendo: las 140 comparaciones de imagen y RAM
-de la regresión (35 programas, cuadros 300 y 3000) salieron idénticas después del cambio.
+comparación byte a byte con el core sigue valiendo: las comparaciones de imagen y RAM
+de la regresión (cuadros 300 y 3000) salieron idénticas después del cambio.
 
 **La tasa de cuadros sigue al modelo:** 59,538 Hz en el modelo MiSTer y 59,299 Hz en el de
 hardware. El ritmo de la ventana, el sonido, el contador de velocidad, las grabaciones en
@@ -1245,7 +1249,9 @@ medio del rango medido, 126–147). La subida, de menos de ~15 ciclos, se trata 
 instantánea. El estado entra en el save state (versión 3).
 
 **Puertos y video** como antes: el puerto FE encuentra el mapa y el PCG, los 3 bits altos
-de FF eligen el banco y el bit 3 apaga la imagen; los puertos sin dueño leen `0xFF`.
+de FF eligen el banco y el bit 3 apaga la imagen; los puertos sin dueño leen `0xFF`. La RAM está
+reflejada en 0x8000–0xBFFF, como en el aparato (en el modelo MiSTer, la memoria es plana,
+como en el core).
 
 ### La CPU
 
@@ -1293,9 +1299,7 @@ El costo es bajo: de ~7.800 a ~7.400 cuadros/s.
 
 Los 3 canales avanzan un paso cada 1024 ciclos del reloj de 17,9 MHz, sincronizados
 con la CPU en cada escritura en los puertos F8–FB. Cada canal tiene su volumen (0,5 / 0,75 / 1,0)
-y el puerto FB enciende el sonido y elige el modo XOR ([sección 2](#sonido)). En el modelo de
-hardware, la RAM está reflejada en 0x8000–0xBFFF, como en el aparato; en el modelo MiSTer,
-la memoria es plana, como en el core. Las muestras salen a la tasa de la tarjeta de sonido (48 kHz) y pasan a estéreo en el
+y el puerto FB enciende el sonido y elige el modo XOR ([sección 2](#sonido)). Las muestras salen a la tasa de la tarjeta de sonido (48 kHz) y pasan a estéreo en el
 adaptador.
 
 ### Save states
@@ -1310,13 +1314,13 @@ eso funcionan el rebobinado y, en RetroArch, el run-ahead y el netplay.
 
 | Decisión | Por qué |
 |---|---|
-| **Partir del core de MiSTer, no de MAME** | un circuito en Verilog se puede simular y comparar byte a byte, y en ese momento era el único que ejecutaba los 13 juegos (la lista de MAME marcaba 6 como no soportados [M2]; en MAME 0.289 funcionan los 13). El precio: MiSTer simplifica el hardware donde MAME no lo simplifica |
+| **Partir del core de MiSTer, no de MAME** | un circuito en Verilog se puede simular y comparar byte a byte, y la lista de MAME marcaba 6 juegos como no soportados [M2] (marca desactualizada: en MAME 0.289 funcionan los 13). El precio: MiSTer simplifica el hardware donde MAME no lo simplifica |
 | **Reescribir en Rust en lugar de simular el Verilog** | un core FPGA es hardware descrito en Verilog; simularlo (Verilator) funcionó a solo ~200% del tiempo real y exige el compilador de Verilog. Reescrito como emulador, funciona a ~12.500% y queda en un solo binario |
 | **Mantener la simulación Verilator como referencia** | cada diferencia se convierte en un número (píxeles y bytes) en lugar de una impresión visual; así se encontraron y se llevaron a cero todas las divergencias |
 | **Usar el crate `iz80` y corregirlo** | escribir un Z80 desde cero es mucho trabajo y mucho riesgo; `iz80` pasa ZEXALL. Los errores de ciclos y del R se corrigieron en una copia (BSD-3) con su licencia incluida, y se documentaron para enviarlos al autor |
 | **224×224 y no 256×192** | es el área que muestra el core: 223 píxeles útiles por línea y el borde arriba y abajo, como en el aparato [F1] |
 | **59,538 Hz y no 60** | es la tasa de la consola; la música y la velocidad de los juegos quedan como en el original. En un monitor de 60 Hz, un cuadro se repite cada ~2 s, algo que casi nadie percibe |
-| **Píxeles cuadrados (1:1)** | es como lo muestra el core de MiSTer; la proporción del aparato en un televisor de 1983 no está documentada |
+| **Píxeles cuadrados (1:1) por defecto** | es como lo muestra el core de MiSTer; la proporción del aparato, 48:35 [N4], queda en la opción **Imagen: TV** |
 | **Lista de MAME (CC0) para identificar, no el DAT de No-Intro** | MAME reconoce también los homebrews y es de dominio público; el DAT de No-Intro era de 2020 y no tenía una licencia clara |
 | **Todo integrado en el ejecutable** | un solo archivo, que funciona en cualquier carpeta; nada que perder o que quede desfasado de versión |
 | **Fichas solo integradas; traducciones de la interfaz integradas y también en una carpeta de idiomas** | las fichas entran por el proyecto, pasan por las pruebas y no quedan desactualizadas en silencio; un idioma nuevo de la interfaz se puede probar sin recompilar, y un texto que falta aparece en inglés |
@@ -1495,8 +1499,9 @@ cada búsqueda de opcode).
 **Salvedades honestas:**
 - la referencia es el **core de MiSTer**, no un aparato real. "Idéntico" quiere decir
   idéntico al core, y el core difiere del aparato en temporización, interrupciones, puertos FE y
-  FF, borde y proporción del píxel ([sección 3](#3-cómo-difieren-las-implementaciones)). Con
-  respecto al hardware real, el MAME actual probablemente está más cerca en esos puntos;
+  FF, borde y proporción del píxel ([sección 3](#3-cómo-difieren-las-implementaciones)). En esos
+  puntos, el modelo de hardware sigue al aparato, verificado con las mediciones de Par
+  (abajo), pero sin una referencia para comparar byte a byte;
 - el sonido es la excepción: sigue la documentación del hardware, no el core;
 - la referencia usa TV80, no el T80 de MiSTer, con la E/S en el reloj de la CPU en lugar de
   `clk_sys`.

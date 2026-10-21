@@ -31,7 +31,7 @@ listed in [References](#13-references). Where the sources disagree, the discrepa
 
 | | |
 |---|---|
-| Accuracy | **High** on the Emulation General Wiki scale: picture and RAM **identical, pixel by pixel and byte by byte**, to the simulated MiSTer core in every game tested; the sound follows the real hardware documentation, one octave below the MiSTer ([section 9](#9-accuracy-and-validation)) |
+| Accuracy | **High** on the Emulation General Wiki scale: picture **identical pixel by pixel** to the simulated MiSTer core in every frame tested, and RAM **identical byte by byte** at frame 3000, in every game tested; the sound follows the real hardware documentation, one octave below the MiSTer ([section 9](#9-accuracy-and-validation)) |
 | Compatibility | 13/13 commercial games and 26/26 homebrews: picture and RAM identical to the reference at frame 3000 ([section 10](#10-compatibility)) |
 | Speed | ~7,400 frames/s on a Ryzen 7 8700G (~125× real time) |
 | Platforms | Linux (Wayland and X11, AppImage), Windows and FreeBSD; libretro core for RetroArch on Linux, Windows and FreeBSD |
@@ -145,7 +145,7 @@ frame, the controller circuit, the connector) come from NESdev's measurements [N
   from hc 17 to 239, that is, **223 pixels** plus 1 black column (224), without the 2 tile
   columns on each side.
 - **Border:** on the real console, the colored border that some games use is **at the top
-  and bottom**. MAME puts it on the sides to fit 4:3; the core's author checked it against
+  and bottom**. MAME put it on the sides up to version 267; the core's author checked it against
   videos of the real console [F1].
 
 ### The board and the chip
@@ -308,7 +308,7 @@ returns the contents of RAM at that address: it is an effect of the core's bus.
 | **FB** | **sound:** bit 1 = on (0 mutes all 3 channels); bit 0 = XOR mode (channel 1 plays 1 ⊕ 2, channel 2 plays 2 ⊕ 3) [N2]. The MiSTer core ignores this port | the last value written |
 | **FC** | — | **status:** bit 0 = "new frame", goes to 1 at line Y=195 and clears on read; bit 1 = there are joystick matrix rows not yet read |
 | **FD** | **selects the rows** of the joystick matrix (bits 0–3) and marks all 4 as pending | **reads the selected row** (4 bits) and marks it as read |
-| FE | stored, no effect in the core (in MAME, the PCG address) | the last value written |
+| FE | stored, no effect in the core or in MAME; on the console, the map and PCG address ([section 3](#3-how-the-implementations-differ)) | the last value written |
 | **FF** | **video:** bit 5 = ROM pattern bank; bit 4 = force ROM patterns on tiles 0xE0–0xFF too; bits 2–0 = border color (B, G, R) | the last value written |
 
 ### Video
@@ -361,7 +361,8 @@ early as frame 2).
   the top 16 lines and the bottom 16 show the **border color**.
 - **Sync:** horizontal sync from hc 341 to 360; vertical sync starts at line 259.
 
-**Aspect ratio:** Mil Capivaras shows square pixels (1:1), like the MiSTer core.
+**Aspect ratio:** Mil Capivaras shows square pixels (1:1), like the MiSTer core. The
+**Picture: TV** option uses the console's, 48:35 ([section 3](#the-two-models)).
 
 ### Sound
 
@@ -552,9 +553,9 @@ reference and understand the discrepancies:
 | Frame | 59.538 Hz; 228.6 cycles × 263 lines | 230.4 × 262 | **60 Hz**, simplified model of 67 line events | 228 × 262 | same as MiSTer |
 | Interrupts | 13 pulses per frame, no acknowledge | 16, enable in FC, acknowledge in FD | 16 per frame (events 51–66) | level on lines 196–256, cleared on reading FC | same as MiSTer |
 | Joystick matrix | priority to the first selected row | OR of the selected rows | OR of the selected rows | OR of the rows | same as MiSTer |
-| PCG / bank | bit 5 of FF = 1 bank bit; PCG fixed at 0xBC00 | bits 7–5 of FF; FE = PCG address | bit 5 of FF = bank; **FE** = map address (and PCG, +0x400) | bits 7–5; FE | same as MiSTer |
+| PCG / bank | bit 5 of FF = 1 bank bit; PCG fixed at 0xBC00 | bits 7–5 of FF; FE ignored (map and PCG fixed at 0xB800) | bit 5 of FF = bank; **FE** = map address (and PCG, +0x400) | bits 7–5; FE | same as MiSTer |
 | Picture | read pixel by pixel | per line | **drawn all at once per frame**, columns 2–29 | — | pixel by pixel, like the MiSTer |
-| Border | top and bottom | on the sides | no border | no border | same as MiSTer |
+| Border | top and bottom | top and bottom (on the sides up to 267) | no border | no border | same as MiSTer |
 | Sound | flips every 63−n steps of 513: **17,444/(63−n) Hz** | divider 1024, mixer in FB: ~one octave lower | **≈ 9,089/(63−n) Hz**: ~one octave lower | mixer in FB | **8,739/(63−n) Hz**, volumes and port FB from the hardware [N2] |
 | Games with no known issue | 13/13 | 13/13 in MAME 0.289 (the list still marks 6 as `supported="no"`, out of date: see below) | not evaluated | — | 13/13 |
 
@@ -565,8 +566,10 @@ started, the MAME list marked 6 cartridges as unsupported (Dig Dug, Pachinko-UFO
 Bug, Space Panic, Naughty Boy, Dirty Chameleon) [M2]. **The flag is out of date:** tested
 on 2026-10-17 in MAME 0.289 (the latest version), all 6 reach gameplay and score points;
 the interrupt, port-read and bus-stealing fixes of July and August 2024 made them run,
-but the list was not corrected. MAME is today the most faithful to the hardware
-([section 3](#the-mister-core-and-the-real-hardware)).
+but the list was not corrected. Among the other emulators, MAME is today the most faithful
+to the hardware ([below](#the-mister-core-and-the-real-hardware)); Mil Capivaras' hardware
+model comes closer in the measurements taken on the console
+([section 9](#validation-against-the-console-pars-measurements)).
 fv1000 [V1] is left out of the table: it is an FPGA experiment in SpinalHDL (wel97459, 2023)
 with only the video, no CPU or I/O. The one useful figure in it is the frame it assumes,
 227.2 cycles × 263 lines, with a test pattern in the border.
@@ -685,8 +688,8 @@ stretching.
 
 **The MiSTer model did not change:** the console's timing only applies to the hardware
 model. In the MiSTer model the CPU never halts and the frame is 59.538 Hz, and the
-byte-by-byte comparison with the core still holds: the regression's 140 picture and RAM
-comparisons (35 programs, frames 300 and 3000) came out identical after the change.
+byte-by-byte comparison with the core still holds: the regression's picture and RAM
+comparisons (frames 300 and 3000) came out identical after the change.
 
 **The frame rate follows the model:** 59.538 Hz in the MiSTer model and 59.299 Hz in the
 hardware one. The window's pacing, the sound, the speed counter, MP4 recordings and, in
@@ -1236,7 +1239,9 @@ released) and keeps reading it as 1 for **136 cycles** (the middle of the measur
 save state (version 3).
 
 **Ports and video** as before: port FE finds the map and the PCG, the top 3 bits of FF
-choose the bank and bit 3 turns the picture off; unowned ports read `0xFF`.
+choose the bank and bit 3 turns the picture off; unowned ports read `0xFF`. RAM is
+mirrored at 0x8000–0xBFFF, as on the console (in the MiSTer model, memory is flat, as in
+the core).
 
 ### The CPU
 
@@ -1284,10 +1289,8 @@ The cost is low: from ~7,800 to ~7,400 frames/s.
 
 The 3 channels advance one step every 1024 cycles of the 17.9 MHz clock, synchronized
 with the CPU on every write to ports F8–FB. Each channel has its own volume (0.5 / 0.75 /
-1.0) and port FB turns the sound on and selects XOR mode ([section 2](#sound)). In the
-hardware model, RAM is mirrored at 0x8000–0xBFFF, as on the console; in the MiSTer model,
-memory is flat, as in the core. Samples come out at the sound card's rate
-(48 kHz) and become stereo in the adapter.
+1.0) and port FB turns the sound on and selects XOR mode ([section 2](#sound)). Samples
+come out at the sound card's rate (48 kHz) and become stereo in the adapter.
 
 ### Save states
 
@@ -1301,13 +1304,13 @@ checks it. That is why rewind and, in RetroArch, run-ahead and netplay work.
 
 | Decision | Why |
 |---|---|
-| **Starting from the MiSTer core, not from MAME** | a circuit in Verilog can be simulated and compared byte by byte, and at the time it was the only one that ran all 13 games (the MAME list marked 6 as unsupported [M2]; in MAME 0.289 all 13 run). The price: the MiSTer simplifies the hardware where MAME does not |
+| **Starting from the MiSTer core, not from MAME** | a circuit in Verilog can be simulated and compared byte by byte, and the MAME list marked 6 games as unsupported [M2] (an out-of-date flag: in MAME 0.289 all 13 run). The price: the MiSTer simplifies the hardware where MAME does not |
 | **Rewriting in Rust instead of simulating the Verilog** | an FPGA core is hardware described in Verilog; simulating it (Verilator) ran at only ~200% of real time and requires the Verilog compiler. Rewritten as an emulator, it runs at ~12,500% and becomes a single binary |
 | **Keeping the Verilator simulation as reference** | every difference becomes a number (pixels and bytes) instead of a visual impression; that is how all the discrepancies were found and brought to zero |
 | **Using the `iz80` crate and fixing it** | writing a Z80 from scratch is a lot of work and a lot of risk; `iz80` passes ZEXALL. The cycle and R errors were fixed in a copy (BSD-3) with its license alongside, and documented to send to the author |
 | **224×224 and not 256×192** | it is the area the core shows: 223 usable pixels per line and the border at the top and bottom, as on the console [F1] |
 | **59.538 Hz and not 60** | it is the console's rate; the music and the speed of the games stay as in the original. On a 60 Hz monitor, one frame repeats every ~2 s, which almost nobody notices |
-| **Square pixels (1:1)** | it is how the MiSTer core displays them; the console's aspect ratio on a 1983 TV is not documented |
+| **Square pixels (1:1) by default** | it is how the MiSTer core displays them; the console's aspect ratio, 48:35 [N4], is in the **Picture: TV** option |
 | **MAME list (CC0) for identification, not the No-Intro DAT** | MAME also recognizes the homebrews and is public domain; the No-Intro DAT was from 2020 and had no clear license |
 | **Everything embedded in the executable** | a single file, which runs from any folder; nothing to lose or get out of sync between versions |
 | **Info sheets embedded only; interface translations embedded plus a languages folder** | the info sheets come in through the project, go through the tests and do not silently go out of date; a new interface language can be tried without rebuilding, and a missing text shows in English |
@@ -1487,7 +1490,8 @@ every opcode fetch).
 - the reference is the **MiSTer core**, not a real console. "Identical" means identical
   to the core, and the core differs from the console in timing, interrupts, ports FE and
   FF, border and pixel aspect ratio ([section 3](#3-how-the-implementations-differ)).
-  With respect to the real hardware, current MAME is probably closer on these points;
+  On these points, the hardware model follows the console, checked against Par's
+  measurements (below), but without a reference to compare byte by byte;
 - the sound is the exception: it follows the hardware documentation, not the core;
 - the reference uses TV80, not the MiSTer's T80, with I/O on the CPU clock instead of
   `clk_sys`.
