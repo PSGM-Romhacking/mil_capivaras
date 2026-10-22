@@ -18,6 +18,8 @@ roms/
 /build/
 /dist/
 target/
+/reference/obj_dir/
+/reference/pv1000-ref
 /mil-capivaras-*-linux-*
 
 # --- test/validation outputs (--shot, --dump-ram) ---

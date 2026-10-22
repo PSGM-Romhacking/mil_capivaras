@@ -1,0 +1,120 @@
+3c3
+< module CasioPV1000
+---
+> module CasioPV1000 #(parameter [10:0] SND_DIV = 11'd512)
+31c31
+< 	output [15:0] vram_a,
+---
+> 	output reg [15:0] vram_a,
+90c90
+< 		if(counter == 11'd512) begin
+---
+> 		if(counter == SND_DIV) begin
+124c124
+< always @(posedge clk) begin
+---
+> always @(negedge clk_cpu) begin  // sim: was posedge clk (71 MHz)
+192c192
+< reg   [9:0] hc,vc;	//Raster Scan
+---
+> reg   [9:0] hc /*verilator public_flat_rd*/, vc /*verilator public_flat_rd*/;	//Raster Scan
+196c196
+< 	if(read_tile) tile = vram_di;
+---
+> 	if(read_tile) tile <= vram_di;
+215,217c215,217
+< reg       force_pattern;
+< reg       pcg_bank;
+< reg [2:0] border_color;
+---
+> reg       force_pattern /*verilator public_flat_rd*/;
+> reg       pcg_bank /*verilator public_flat_rd*/;
+> reg [2:0] border_color /*verilator public_flat_rd*/;
+221c221
+< 		t_offset = (Y/10'd8) * 10'd32 + (X/10'd8);
+---
+> 		t_offset <= (Y/10'd8) * 10'd32 + (X/10'd8);
+233c233
+< 				rgb_bit_read = 1;
+---
+> 				rgb_bit_read <= 1;
+236,238c236,238
+< 				rgb_bit_read = 0;
+< 				vram_a = 16'hB800 + t_offset;
+< //				vram_a = 16'hB800 + (Y/10'd8) * 10'd32 + (X/10'd8);
+---
+> 				rgb_bit_read <= 0;
+> 				vram_a <= 16'hB800 + t_offset;
+> //				vram_a <= 16'hB800 + (Y/10'd8) * 10'd32 + (X/10'd8);
+246c246
+< 		read_tile = 1'b1;
+---
+> 		read_tile <= 1'b1;
+248c248
+< 			rgb_bit_read = 0;
+---
+> 			rgb_bit_read <= 0;
+251c251
+< 		else rgb_bit_read = 1;
+---
+> 		else rgb_bit_read <= 1;
+256,258c256,258
+< 		if(read_tile) read_tile = 1'b0;
+< 		if(tile < 'hE0 || force_pattern) vram_a = (((tile + (pcg_bank ? 16'h100 : 16'h0)) * 8'd32) + (Y%10'd8) + 8'd8);
+< 		else vram_a = 16'hBC00 + (((tile - 8'hE0) * 8'd32) + (Y%10'd8) + 8'd8);
+---
+> 		if(read_tile) read_tile <= 1'b0;
+> 		if(tile < 'hE0 || force_pattern) vram_a <= (((tile + (pcg_bank ? 16'h100 : 16'h0)) * 8'd32) + (Y%10'd8) + 8'd8);
+> 		else vram_a <= 16'hBC00 + (((tile - 8'hE0) * 8'd32) + (Y%10'd8) + 8'd8);
+260c260
+< 			rgb_bit_read = 0;
+---
+> 			rgb_bit_read <= 0;
+263c263
+< 		else rgb_bit_read = 1;
+---
+> 		else rgb_bit_read <= 1;
+268,270c268,270
+< 		RED_r = vram_di[(7-(X%10'd8))] ? 8'hFF : 8'h00;
+< 		if(tile < 'hE0 || force_pattern) vram_a = (((tile + (pcg_bank ? 16'h100 : 16'h0)) * 8'd32) + (Y%10'd8) + 8'd16);
+< 		else vram_a = 16'hBC00 + (((tile - 8'hE0) * 8'd32) + (Y%10'd8) + 8'd16);
+---
+> 		RED_r <= vram_di[(7-(X%10'd8))] ? 8'hFF : 8'h00;
+> 		if(tile < 'hE0 || force_pattern) vram_a <= (((tile + (pcg_bank ? 16'h100 : 16'h0)) * 8'd32) + (Y%10'd8) + 8'd16);
+> 		else vram_a <= 16'hBC00 + (((tile - 8'hE0) * 8'd32) + (Y%10'd8) + 8'd16);
+272c272
+< 			rgb_bit_read = 0;
+---
+> 			rgb_bit_read <= 0;
+275c275
+< 		else rgb_bit_read = 1;
+---
+> 		else rgb_bit_read <= 1;
+280,282c280,282
+< 		GREEN_r = vram_di[(7-(X%10'd8))] ? 8'hFF : 8'h00;
+< 		if(tile < 'hE0 || force_pattern) vram_a = (((tile + (pcg_bank ? 16'h100 : 16'h0)) * 8'd32) + (Y%10'd8) + 8'd24);
+< 		else vram_a = 16'hBC00 + (((tile - 8'hE0) * 8'd32) + (Y%10'd8) + 8'd24);
+---
+> 		GREEN_r <= vram_di[(7-(X%10'd8))] ? 8'hFF : 8'h00;
+> 		if(tile < 'hE0 || force_pattern) vram_a <= (((tile + (pcg_bank ? 16'h100 : 16'h0)) * 8'd32) + (Y%10'd8) + 8'd24);
+> 		else vram_a <= 16'hBC00 + (((tile - 8'hE0) * 8'd32) + (Y%10'd8) + 8'd24);
+284c284
+< 			rgb_bit_read = 0;
+---
+> 			rgb_bit_read <= 0;
+287c287
+< 		else rgb_bit_read = 1;
+---
+> 		else rgb_bit_read <= 1;
+292,294c292,294
+< 		BLUE = vram_di[(7-(X%10'd8))] ? 8'hFF : 8'h00;
+< 		RED = RED_r;
+< 		GREEN = GREEN_r;
+---
+> 		BLUE <= vram_di[(7-(X%10'd8))] ? 8'hFF : 8'h00;
+> 		RED <= RED_r;
+> 		GREEN <= GREEN_r;
+303c303
+< always @(posedge clk) begin
+---
+> always @(negedge clk_cpu) begin  // sim: was posedge clk (71 MHz)
