@@ -15,6 +15,8 @@ completa:
 
 También viene como **core libretro**, para RetroArch.
 
+**Sitio web:** <https://psgm-romhacking.github.io/mil_capivaras/>
+
 **Hecho con IA:** el código y esta documentación se escribieron con Claude Code (modelo
 Claude Opus 5.5), con dirección, pruebas y revisión del autor.
 

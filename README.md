@@ -15,6 +15,8 @@ graphical interface:
 
 It also ships as a **libretro core**, for RetroArch.
 
+**Website:** <https://psgm-romhacking.github.io/mil_capivaras/>
+
 **Made with AI:** the code and this documentation were written with Claude Code (model
 Claude Opus 5.5), directed, tested and reviewed by the author.
 
