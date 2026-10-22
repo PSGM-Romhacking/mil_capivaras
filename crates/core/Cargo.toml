@@ -1,6 +1,6 @@
 [package]
 name = "pv1000-core"
-description = "Casio PV-1000 core (reimplemented from the MiSTer core): CPU, video, sound, IO, save state, memory map and No-Intro identification"
+description = "Casio PV-1000 core (reimplemented from the MiSTer core): CPU, video, sound, IO, save state, memory map and game database (CRC32 identification)"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
