@@ -1,230 +1,219 @@
-# Mil Capivaras como core do RetroArch (libretro)
+# Core libretro (RetroArch)
 
 [English](libretro.md) · **Português** · [Español](libretro.es.md)
 
-Como o emulador vira o core `mil_capivaras_libretro.so`, que roda dentro do RetroArch, e
-por que cada decisão foi tomada.
+O Mil Capivaras também vem como **core libretro**: `mil_capivaras_libretro.so`
+(`.dll` no Windows), o mesmo `pv1000-core` da interface própria atrás da API C do libretro.
+O RetroArch carrega o core, entrega a ROM e chama `retro_run()` uma vez por quadro; o core
+devolve imagem e som e lê os controles por *callbacks*. Ele não abre janela, não toca som e
+não cria threads: só emula.
 
+Testado no RetroArch Flatpak 1.22.2: 224×224 a 59,54 FPS, áudio a 48 kHz, e o quadro 600
+do Dig Dug é idêntico byte a byte ao do Mil Capivaras.
 
-> **Estado:** `libretro` gera `mil_capivaras_libretro.so`
-> (`make libretro`; `make install-libretro` copia `.so` + `.info` para a pasta de cores
-> do RetroArch lida do `retroarch.cfg`). Testado no RetroArch Flatpak 1.22.2: carrega,
-> 224×224 a 59,54 FPS, áudio 48000 Hz, e o quadro 600 do Dig Dug é idêntico byte a
-> byte ao do Mil Capivaras. O teste `c_api_matches_the_core_and_states_round_trip` confere
-> a API em C contra o núcleo direto (quadros, taxa de áudio, save state, RAM).
-> A pasta de `.info` do Flatpak (`/app/share/libretro/info`) é só leitura: o `.info`
-> fica ao lado do `.so`, e sem ele o RetroArch lista o core pelo nome do arquivo.
-> Ainda não feito: a opção de som suave e `SET_MEMORY_MAPS`.
+Referência da API: [`libretro.h`](https://github.com/libretro/libretro-common/blob/master/include/libretro.h)
+e [*Developing cores*](https://docs.libretro.com/development/cores/developing-cores/).
 
-## Por que vale a pena
+## Instalar
 
-- O RetroArch passa a cuidar de **janela, vídeo, shaders, áudio, controles,
-  remapeamento, save states, rewind, run-ahead, netplay e RetroAchievements**.
-- O coração do emulador já está separado da interface no crate `crates/core`
-  (console, mapa de memória, CPU `iz80`), que depende de `emu-api`, `iz80` e
-  `serde`/`serde_json`, e de nada de interface. Nada ali usa egui, cpal, arquivos ou relógio — é exatamente o que um core precisa.
+Os releases trazem o core pronto (`mil_capivaras_libretro-<versão>-<sistema>.zip`, com o
+`.so` ou `.dll` e o `.info`): descompacte na pasta de cores do RetroArch. Para compilar:
 
-## O que é um core libretro
-
-Uma biblioteca dinâmica (`.so`) que exporta funções C com nomes fixos (`retro_*`).
-O RetroArch carrega a biblioteca, entrega a ROM e chama `retro_run()` uma vez por
-quadro; o core devolve o quadro, o áudio e lê os botões por *callbacks* que o
-RetroArch registrou antes. O core **não** abre janela, não toca som, não lê teclado
-nem cria threads — só emula.
-
-Referência: `libretro.h` em <https://github.com/libretro/libretro-common/blob/master/include/libretro.h>
-e a documentação em <https://docs.libretro.com/development/cores/developing-cores/>.
-
-## Diretrizes
-
-### 1. Workspace
-
-O projeto já está separado (ver [architecture.pt-BR.md](architecture.pt-BR.md)):
-
-```
-mil_capivaras/
-├── Cargo.toml                 [workspace]
-├── crates/api/                trait Core + SystemInfo, nas convenções do libretro
-├── crates/core/               console + adaptador Core  (dep.: emu-api, iz80, serde)
-├── crates/frontend/           a interface egui reutilizável
-├── crates/app/                o executável
-└── crates/libretro/           crate-type = ["cdylib"] → mil_capivaras_libretro.so
+```bash
+make libretro           # target/release/libmil_capivaras_libretro.so
+make install-libretro   # copia o .so e o .info para a pasta de cores lida do retroarch.cfg
 ```
 
-- O core libretro só precisa de `pv1000-core` (via o trait `emu_api::Core`): cada
-  `retro_*` vira uma chamada do trait, e as convenções já batem — RetroPad em bits
-  na ordem do libretro, quadro XRGB8888 (`RETRO_PIXEL_FORMAT_XRGB8888`), áudio f32
-  estéreo (converter para i16 em `retro_audio_sample_batch`), estado em bytes
-  opacos (`retro_serialize`) e `system_ram()` (`RETRO_MEMORY_SYSTEM_RAM`).
-- `pv1000-core` não pode depender de egui, cpal, rfd, libc, arquivos ou `Instant`.
-- A interface e o core libretro usam **o mesmo** `pv1000-core`: uma correção de
-  emulação vale para os dois.
+O `make install-libretro` acha a pasta no `retroarch.cfg` do Flatpak ou do RetroArch
+nativo. No Flatpak, a pasta de `.info` do sistema (`/app/share/libretro/info`) é só leitura,
+então o `.info` vai ao lado do `.so`; sem ele, o RetroArch lista o core pelo nome do
+arquivo. Para rodar direto:
 
-### 2. Ligação com a API C
+```bash
+flatpak run org.libretro.RetroArch -L ~/.var/app/org.libretro.RetroArch/config/retroarch/cores/mil_capivaras_libretro.so jogo.bin
+```
 
-- A API é pequena (~25 funções). Recomendado: gerar os tipos de `libretro.h` com
-  `bindgen` uma vez e versionar o arquivo gerado, ou escrever à mão só o que for
-  usado. O crate `libretro-sys` existe, mas está parado há anos.
-- Todas as funções exportadas: `#[unsafe(no_mangle)] pub extern "C" fn retro_…`.
-- O estado do core fica num `static` (ex.: `Mutex<Option<Core>>` ou `static mut`
-  com cuidado): a API não passa ponteiro de contexto.
-- Nunca deixar um `panic` atravessar a fronteira C: usar `std::panic::catch_unwind`
-  nas funções exportadas, ou compilar com `panic = "abort"` no perfil do core.
+## O que o RetroArch traz
 
-### 3. Funções obrigatórias e como mapear
+Janela, shaders, remapeamento de controles, save states, rewind, run-ahead, netplay e
+trapaças (pela RAM exposta), sem nada a mais no core. Escala, filtros (scanlines, CRT),
+volume e mudo também ficam com o RetroArch.
 
-| Função libretro | O que fazer no Mil Capivaras |
+## Como funciona
+
+### O mesmo núcleo
+
+`crates/libretro` (`crate-type = ["cdylib"]`) depende só de `emu-api` e `pv1000-core`
+([arquitetura](architecture.pt-BR.md)). O `pv1000-core` não usa egui, áudio, arquivos nem
+relógio, e o contrato `emu-api` já segue as convenções do libretro. Por isso cada `retro_*`
+é uma chamada do trait `Core`, e uma correção de emulação vale para as duas interfaces.
+
+### A ligação com a API C
+
+- Os tipos de `libretro.h` que o core usa estão escritos à mão em `lib.rs` (`#[repr(C)]`),
+  sem `bindgen` nem o crate `libretro-sys`.
+- A API não passa ponteiro de contexto: o core fica num `static Mutex<Option<…>>`.
+- Toda função exportada passa por `catch_unwind`: nenhum *panic* atravessa para o C.
+
+### As funções
+
+| Função libretro | No Mil Capivaras |
 |---|---|
-| `retro_api_version` | devolver `RETRO_API_VERSION` (1) |
-| `retro_set_environment` | guardar o callback; anunciar as opções do core (`SET_VARIABLES`) |
-| `retro_set_video_refresh`, `retro_set_audio_sample_batch`, `retro_set_input_poll`, `retro_set_input_state` | guardar os callbacks |
+| `retro_api_version` | `RETRO_API_VERSION` (1) |
+| `retro_set_environment` | guarda o callback e anuncia as opções do core (`SET_VARIABLES`) |
+| `retro_set_video_refresh`, `retro_set_audio_sample_batch`, `retro_set_input_poll`, `retro_set_input_state` | guardam os callbacks |
 | `retro_init` / `retro_deinit` | `retro_init` não faz nada; `retro_deinit` libera o core |
-| `retro_get_system_info` | nome "Mil Capivaras", versão, extensões `pv1\|bin\|rom`, `need_fullpath = false`, `block_extract = false` (o RetroArch descompacta o `.zip`) |
-| `retro_get_system_av_info` | geometria do quadro atual (224×224, ou 224×244 com a imagem TV), FPS = `Core::fps()` (59,538 no modelo MiSTer, 59,299 no de hardware), taxa de áudio fixa (48000) |
-| `retro_load_game` | definir formato de pixel (`SET_PIXEL_FORMAT` = XRGB8888) e os descritores de entrada; `(INFO.create)(48000)` + opções do core + `load(data)` |
-| `retro_run` | `input_poll()`; ler as portas 0 e 1 como RetroPad; `run_frame(&pads)`; enviar vídeo e áudio |
+| `retro_get_system_info` | nome "Mil Capivaras", versão, extensões `pv1\|bin\|rom`, `need_fullpath = false`, `block_extract = false` (o RetroArch descompacta `.zip` e `.7z`) |
+| `retro_get_system_av_info` | geometria do quadro atual (224×224, ou 224×244 com a imagem TV), FPS = `Core::fps()` (59,538 no modelo MiSTer, 59,299 no de hardware), áudio a 48000 Hz |
+| `retro_load_game` | pede o formato XRGB8888 (`SET_PIXEL_FORMAT`) e anuncia os botões (`SET_INPUT_DESCRIPTORS`); cria o núcleo, aplica as opções e carrega a ROM |
+| `retro_run` | relê as opções se mudaram; lê os controles das portas 0 e 1; roda um quadro; envia imagem e som |
 | `retro_reset` | `reset()` |
-| `retro_serialize_size` / `retro_serialize` / `retro_unserialize` | `save_state()` / `load_state()` (tamanho fixo, ver item 7) |
-| `retro_get_memory_data` / `retro_get_memory_size` | `RETRO_MEMORY_SYSTEM_RAM` → `system_ram_mut()`, `mem[0xB800]`, tamanho 0x800 (ver item 8) |
-| `retro_unload_game`, `retro_get_region` (NTSC), `retro_set_controller_port_device`, `retro_cheat_*`, `retro_load_game_special` | mínimos / vazios |
+| `retro_serialize_size` / `retro_serialize` / `retro_unserialize` | `save_state()` / `load_state()` |
+| `retro_get_memory_data` / `retro_get_memory_size` | `RETRO_MEMORY_SYSTEM_RAM`: os 2 KB de RAM |
+| `retro_get_region` | NTSC |
+| `retro_unload_game`, `retro_set_controller_port_device`, `retro_cheat_*`, `retro_load_game_special` | vazias |
 
-### 4. Vídeo
+### Vídeo
 
-- O quadro do core (`Core::video()`) já é `0x00RRGGBB` — **é exatamente o formato
-  `RETRO_PIXEL_FORMAT_XRGB8888`**. `video_refresh(f.pixels, f.width, f.height, f.pitch * 4)`,
-  sem conversão.
-- Proporção: o `aspect` do quadro vai em `aspect_ratio`. A opção `mil_capivaras_picture`
-  (item 9) escolhe MiSTer (224×224, pixel quadrado) ou TV (224×244, pixel 48:35).
-- Escala, filtros (scanlines/CRT) e tela cheia **saem do core**: o RetroArch tem
-  shaders para isso.
+O quadro do núcleo já é `0x00RRGGBB`, o formato `RETRO_PIXEL_FORMAT_XRGB8888`: vai direto
+para o RetroArch, sem conversão. A proporção do quadro vai em `aspect_ratio`.
 
-### 5. Áudio
+### Áudio
 
-- `retro_audio_sample_batch` recebe **i16 estéreo intercalado**. O trait já entrega `f32`
-  estéreo intercalado (`take_audio()`): o core só converte com
-  `(s.clamp(-1.0, 1.0) * 32767.0) as i16`.
-- Taxa: fixa em 48000, passada ao `(INFO.create)` e informada em `av_info.timing.sample_rate`.
-- "Som suave" (passa-baixa + bloqueio de DC, hoje `App::soften` em
-  `crates/frontend/src/app/emulation.rs`) vira opção do core;
-  mover a função para o `pv1000-core` para as duas interfaces usarem.
-- Volume e mudo são do RetroArch.
+O núcleo entrega `f32` estéreo intercalado; o core converte para `i16` com
+`(s.clamp(-1.0, 1.0) * 32767.0) as i16` e envia por `retro_audio_sample_batch`, a 48000 Hz.
 
-### 6. Entrada (RetroPad)
+### Controles
 
-- Portas 0 e 1 = jogadores 1 e 2, dispositivo `RETRO_DEVICE_JOYPAD`.
-- Sugestão de mapa: D-pad → direções; **B** (botão de baixo) → Fire 1; **A**
-  (direita) → Fire 2; Select → Select; Start → Start. O core libretro só lê o RetroPad;
-  a conversão para os bits do joystick do MiSTer (0 dir, 1 esq, 2 baixo, 3 cima, 4 Fire 1,
-  5 Fire 2, 6 Select, 7 Start) fica em `crates/core/src/core.rs`.
-- Anunciar os nomes com `SET_INPUT_DESCRIPTORS` ("Fire 1", "Fire 2"…), para aparecerem
-  no menu de controles do RetroArch.
-- `gamepad.rs` e `keys.rs` **não** vão para o core: o remapeamento é do RetroArch.
+Portas 0 e 1 = jogadores 1 e 2, como RetroPad (`RETRO_DEVICE_JOYPAD`):
 
-### 7. Save states, rewind e determinismo
+| RetroPad | PV-1000 |
+|---|---|
+| direcional | direcional |
+| B (botão de baixo) | Fire 1 |
+| A (botão da direita) | Fire 2 |
+| Select / Start | Select / Start |
 
-- O RetroArch usa `retro_serialize` também para **rewind, run-ahead e netplay**: o
-  core ganha esses recursos de graça se o estado for **completo, determinístico e de
-  tamanho fixo**.
-- Já atendido: `Snapshot` guarda CPU, RAM, IO e som; o teste
-  `save_state_is_deterministic` prova que salvar → rodar → restaurar → rodar dá
-  imagem e RAM idênticas. O tamanho de `to_bytes` é fixo para um mesmo build.
-- Cuidado ao evoluir: qualquer campo novo de estado do console precisa entrar no
-  `Snapshot` (`crates/core/src/machine/state.rs`) e mudar `STATE_VERSION`.
-- O cabeçalho do arquivo (`PVST`, versão, hash da ROM) pode continuar: o RetroArch
-  trata o buffer como opaco.
+Os nomes ("Fire 1", "Fire 2"…) aparecem no menu de controles do RetroArch. A conversão
+para os bits do joystick do MiSTer fica em `crates/core/src/core.rs`.
 
-### 8. Memória e RetroAchievements
+### Save states, rewind e netplay
 
-- `retro_get_memory_data(RETRO_MEMORY_SYSTEM_RAM)` → `mem[0xB800..0xC000]` (2 KB,
-  contíguos no array do core). Esse bloco **é o espaço plano 0x000–0x7FF** de
-  `crates/core/src/memory.rs`: os endereços das conquistas ficam iguais nas duas versões.
-- Melhor ainda: `SET_MEMORY_MAPS` com um descritor por região do `memory::MAP`
-  (o RetroArch e o rcheevos usam isso para traduzir endereços).
-- Com o core no RetroArch, a integração com o RetroAchievements é **do RetroArch**
-  (login, hardcore, notificações) — o `achievements.rs` da interface própria fica
-  só para quem usar o Mil Capivaras sem RetroArch. Conquistas oficiais ainda dependem do
-  PV-1000 ser aceito como console pelo RetroAchievements.
-- Sem bateria no cartucho: `RETRO_MEMORY_SAVE_RAM` = vazio (tamanho 0).
+O RetroArch usa `retro_serialize` também para rewind, run-ahead e netplay, o que exige um
+estado **completo, determinístico e de tamanho fixo**. O estado do núcleo guarda CPU, RAM,
+E/S e som (`crates/core/src/machine/state.rs`, com cabeçalho `PVST` e versão), e o teste
+`save_state_is_deterministic` confere que salvar, rodar e restaurar dá a mesma imagem e
+RAM. Um campo novo no estado do console precisa entrar no `Snapshot` e mudar
+`STATE_VERSION`.
 
-### 9. Opções do core
+### Memória
 
-Implementadas com `SET_VARIABLES` (a forma mais simples, que todo frontend entende); os
-rótulos ficam em inglês no RetroArch:
+`RETRO_MEMORY_SYSTEM_RAM` expõe 0xB800–0xBFFF (2 KB), que é o espaço plano 0x000–0x7FF de
+`crates/core/src/memory.rs`: os endereços de trapaças e conquistas são os mesmos no core e
+no `--memory-map` da interface própria. O cartucho não tem bateria, então não há
+`RETRO_MEMORY_SAVE_RAM`.
+
+### Opções do core
+
+Por `SET_VARIABLES`, a forma que todo frontend entende; os rótulos ficam em inglês:
 
 | Variável | Valores | Efeito |
 |---|---|---|
 | `mil_capivaras_model` | *MiSTer core (validated)* / *Real hardware (NESdev/MAME)* | o modelo de emulação: o do core do MiSTer (59,538 Hz, validado byte a byte) ou o do aparelho (59,299 Hz, roubo de barramento, portas FC/FD/FE/FF completas, atraso da matriz) |
 | `mil_capivaras_picture` | *MiSTer (224x224, square pixels)* / *TV (26-line border, 48:35 pixels)* | só a apresentação: 224 × 224 com pixel quadrado, ou 224 × 244 com a borda do aparelho e pixel 48:35 |
 
-Lidas com `GET_VARIABLE` no `retro_load_game` e quando `GET_VARIABLE_UPDATE` avisar. Ao
-mudar:
-- **se a taxa de quadros mudou** (troca de modelo), o core chama `SET_SYSTEM_AV_INFO` com a
-  geometria e a taxa novas (`Core::fps()`), para o RetroArch ajustar o ritmo e o som;
-- **senão**, só `SET_GEOMETRY`, porque a imagem pode ter mudado de tamanho ou proporção.
+O core lê as opções no `retro_load_game` e quando `GET_VARIABLE_UPDATE` avisa. Se a taxa de
+quadros mudou (troca de modelo), chama `SET_SYSTEM_AV_INFO`, para o RetroArch ajustar o
+ritmo e o som; senão, só `SET_GEOMETRY`.
 
-### 10. Arquivo `.info`
+### O arquivo `.info`
 
-O RetroArch precisa de `mil_capivaras_libretro.info` ao lado do core (ou na pasta de info):
+`crates/libretro/mil_capivaras_libretro.info` diz ao RetroArch o nome do core, o sistema e
+os recursos (`savestate_features = "deterministic"`, `cheats`, `cheevos_option`). O campo
+`database = "Casio - PV-1000"` bate com o `Casio - PV-1000.rdb` do libretro-database, então
+o scanner do RetroArch reconhece os jogos.
 
-```ini
-# Mil Capivaras as a libretro core (RetroArch reads this next to the .so or in its info folder)
-display_name = "Casio - PV-1000 (Mil Capivaras)"
-authors = "Péricles S."
-supported_extensions = "pv1|bin|rom"
-corename = "Mil Capivaras"
-categories = "Emulator"
-license = "GPLv3"
-permissions = ""
-display_version = "0.9.0"
-manufacturer = "Casio"
-systemname = "PV-1000"
-systemid = "pv1000"
-database = "Casio - PV-1000"
-supports_no_game = "false"
-savestate = "true"
-savestate_features = "deterministic"
-needs_fullpath = "false"
-cheats = "true"
-cheevos_option = "true"
-description = "Casio PV-1000 emulator in Rust, reimplemented from the MiSTer core (Flandango, GPL)."
-```
+### Compilação para distribuição
 
-O nome em `database` precisa bater com o banco do RetroArch (`libretro-database`)
-para o scanner reconhecer os jogos — conferir se existe `Casio - PV-1000.rdb`.
+- **Linux:** a CI (`.github/workflows/release.yml`, `packaging/build_linux.sh`) compila com
+  `cargo-zigbuild` para glibc 2.27, e o core roda em sistemas antigos e no runtime do
+  Flatpak.
+- **Windows:** `.dll` compilada de forma cruzada com MinGW (`packaging/build_windows.sh`).
+- **FreeBSD:** `.so` compilado pelo job `freebsd` do `release.yml`.
 
-### 11. Build e instalação local
+O arquivo instalado tem de terminar em `_libretro.so` (`_libretro.dll` no Windows). Como o
+`pv1000-core` é só Rust, o core depende apenas da libc.
 
-```bash
-cargo build --release -p mil_capivaras_libretro      # gera target/release/libmil_capivaras_libretro.so
-C=~/.var/app/org.libretro.RetroArch/config/retroarch/cores
-install -m 755 target/release/libmil_capivaras_libretro.so $C/mil_capivaras_libretro.so
-install -m 644 crates/libretro/mil_capivaras_libretro.info $C/
-flatpak run org.libretro.RetroArch -L $C/mil_capivaras_libretro.so "jogo.bin"
-```
+## Testes
 
-- O RetroArch daqui é **Flatpak** (runtime `org.kde.Platform 6.11`, glibc 2.42). Um
-  core compilado no Fedora 43 (exige glibc ≥ 2.39) roda nele. Para distribuir (feito),
-  a CI (`.github/workflows/release.yml`, `packaging/build_linux.sh`) compila com
-  `cargo-zigbuild` para glibc 2.27, e o core roda também em sistemas mais antigos.
-- O core de Windows (`.dll`) é compilado de forma cruzada com MinGW
-  (`packaging/build_windows.sh`), e o de FreeBSD (`.so`), pelo job `freebsd` do `release.yml`.
-- O nome do arquivo instalado tem que terminar em `_libretro.so` (`_libretro.dll` no Windows).
-- O core não pode depender de bibliotecas que o runtime do Flatpak não tenha: com
-  `pv1000-core` só em Rust (`iz80`, `serde`), depende apenas da libc.
+O teste `c_api_matches_the_core_and_states_round_trip` chama a API em C como o RetroArch
+chamaria e compara com o núcleo direto: quadros, taxa de áudio, save state e RAM. Os testes
+do `pv1000-core` (save state determinístico, mapa de memória) valem para o core sem mudança.
 
-### 12. Testes
+## O que falta
 
-- Os testes de `pv1000-core` (save state determinístico, mapa de memória, leitura
-  plana) valem para o core sem mudança.
-- Comparar quadros: rodar o mesmo jogo no Mil Capivaras (`--shot`) e no core
-  (`retroarch --max-frames=N` + captura) — devem ser idênticos.
-- Ferramenta útil: o "libretro-test" / `retroarch --verbose` para ver as chamadas.
+- **Som suave** como opção do core: o passa-baixa com bloqueio de DC da interface própria
+  (`soften`, em `crates/frontend/src/app/emulation.rs`) teria de ir para o `pv1000-core`.
+- **`SET_MEMORY_MAPS`**, com um descritor por região do `memory::MAP`, que o RetroArch e o
+  rcheevos usam para traduzir endereços. Hoje só há a RAM em `RETRO_MEMORY_SYSTEM_RAM`.
 
-## Ordem sugerida
+## RetroAchievements
 
-1. Workspace + `pv1000-core` (só mover arquivos; a interface continua funcionando).
-2. Core mínimo: `load_game`, `run` (vídeo + áudio + RetroPad), `reset`, `.info`.
-3. Save states (`serialize`) → rewind/run-ahead/netplay do RetroArch.
-4. Mapa de memória (`SYSTEM_RAM`: feito; `SET_MEMORY_MAPS`: pendente) → base para conquistas.
-5. Opções do core (modelo e imagem: feito; som suave: pendente) e traduções.
-6. Build para distribuição (feito: CI com `cargo-zigbuild`, glibc 2.27).
+**Ainda não há conquistas para o PV-1000**, e o bloqueio não está no emulador: o
+RetroAchievements (RA) não suporta o console. A lista oficial de consoles do `rcheevos`, a
+biblioteca do RA, vai até o ID 82 (PS3) e não tem o PV-1000 ([rc_consoles.h](https://github.com/RetroAchievements/rcheevos/blob/develop/include/rc_consoles.h)). Sem
+esse ID não há como cadastrar jogos nem conquistas.
+
+**O que o RA pede para aceitar um console novo** ([System X wen](https://docs.retroachievements.org/orphaned/system-x-wen.html)):
+1. um emulador, de preferência um core libretro, que **exponha a memória** e rode no
+   **RALibretro** (a ferramenta em que se criam as conquistas);
+2. uma **identificação única** de cada jogo: o MD5 do arquivo, sem cabeçalho;
+3. o **servidor** do RA configurado para o sistema (trabalho da equipe do RA, junto com o
+   ID novo no `rcheevos`).
+
+**Situação de cada parte:**
+
+| Parte | Situação |
+|---|---|
+| Memória exposta | pronta: o core entrega os 2 KB de RAM em `RETRO_MEMORY_SYSTEM_RAM` |
+| Identificação dos jogos | simples: a ROM do PV-1000 não tem cabeçalho, o MD5 é o do arquivo inteiro |
+| Mapa de memória | pronto: `--memory-map` gera no formato do RA |
+| RALibretro | falta testar (é um programa de Windows; no Linux, pelo Wine) |
+| Pedido do console | falta: pelo fórum ou Discord do RA; um PR ao `rcheevos` com o ID, o mapa de memória e o método de hash acelera |
+| Servidor e conquistas | depende do RA aceitar e de alguém criar conquistas para os 13 jogos |
+
+**O caminho previsto é o core libretro:** aceito o console, o RetroArch já cuida de login,
+conquistas e modo hardcore, sem nada a mais no Mil Capivaras.
+
+**Conquistas no próprio emulador** são um projeto à parte. Os pontos de ligação já estão
+marcados em `achievements.rs`, e as regras de "hardcore compliance" do RA
+([Hardcore Compliance Requirements](https://docs.retroachievements.org/general/hardcore-compliance-requirements.html)) pedem:
+- integrar o `rcheevos` (C, via FFI): login, lista de conquistas, notificações, rich
+  presence, placares e fila de desbloqueios feitos offline;
+- no modo hardcore, bloquear trapaças, retroceder, câmera lenta, avanço de quadro, carregar
+  save states, o depurador e o editor de memória; passar de casual para hardcore reinicia o
+  jogo;
+- um user agent próprio (`MilCapivaras/0.9.0 (Linux)`);
+- **6 meses de lançamento público**, no mínimo, antes de pedir a aprovação para hardcore.
+
+**Plano (ainda não feito): notas de memória e rascunhos de conquistas automáticos.**
+No RA, uma conquista é uma lógica sobre endereços da RAM (ex.: `0xH027de4=3`), escrita a
+partir das **notas de memória** do jogo: endereço, tamanho e significado. As notas de
+qualquer jogo podem ser lidas sem login pela mesma API do RAIntegration,
+`https://retroachievements.org/dorequest.php?r=codenotes2&g=<ID>` (a página `codenotes.php` do site é bloqueada pelo Cloudflare). O Vandal Hearts II
+(PS1, jogo 11356), por exemplo, tem 2.810 notas.
+
+Com 2 KB de RAM e o emulador próprio, boa parte disso pode ser automatizada no PV-1000:
+1. **Achar os endereços:** rodar cada jogo sem janela com entradas programadas (morrer,
+   pontuar, passar de fase) e comparar a RAM com `--dump-ram`, para localizar pontuação,
+   vidas, fase e estado de jogo;
+2. **Gerar as notas** de cada um dos 13 jogos, no formato do RA;
+3. **Escrever rascunhos de conquistas** ("chegar à fase 3", "10.000 pontos") e
+   conferi-los reproduzindo as mesmas partidas no emulador.
+
+**Limites:** um rascunho não substitui o teste jogando no RALibretro (a conquista precisa
+disparar no momento certo e nunca fora dele, com `Delta`, `ResetIf` e contadores contra
+disparos falsos); notas erradas geram lógica errada; e só desenvolvedores do RA publicam
+conquistas, com reivindicação do set e revisão. O objetivo é chegar ao pedido do console
+com o core, as notas e os rascunhos dos 13 jogos prontos. Um bom primeiro teste é o
+Pooyan, que já tem a pontuação mapeada (BB22/BB23).
