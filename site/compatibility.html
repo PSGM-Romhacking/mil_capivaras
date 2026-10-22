@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Compatibility · Mil Capivaras</title>
+<meta name="description" content="Mil Capivaras: an accurate Casio PV-1000 emulator written in Rust, with a libretro core for RetroArch.">
+<meta property="og:title" content="Mil Capivaras: Casio PV-1000 emulator">
+<meta property="og:description" content="Accurate Casio PV-1000 emulator in Rust. Linux, Windows, FreeBSD and RetroArch.">
+<meta property="og:image" content="img/library-covers.png">
+<link rel="icon" href="img/pv1000.svg" type="image/svg+xml">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="index.html"><img src="img/pv1000.svg" alt="" width="28" height="28"> Mil Capivaras</a>
+    <nav>
+      <a class="hide-sm" href="index.html#features" data-i18n="nav_features">Features</a>
+      <a class="hide-sm" href="index.html#compat" data-i18n="nav_compat">Compatibility</a>
+      <a class="hide-sm" href="index.html#screens" data-i18n="nav_screens">Screenshots</a>
+      <a class="hide-sm" href="index.html#download" data-i18n="nav_download">Download</a>
+      <a class="hide-sm" href="https://github.com/PSGM-Romhacking/mil_capivaras/blob/main/docs/manual.md" data-i18n="nav_docs">Docs</a>
+      <a href="https://github.com/PSGM-Romhacking/mil_capivaras">GitHub</a>
+      <div class="lang" role="group" aria-label="Language">
+        <button type="button" data-lang="en">EN</button>
+        <button type="button" data-lang="pt">PT</button>
+        <button type="button" data-lang="es">ES</button>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<main>
+<div class="wrap">
+  <section id="compat" class="compat-page">
+    <h2 data-i18n="compat_title">Compatibility</h2>
+    <p class="sub" data-i18n="compat_sub">Every game was run side by side with the MiSTer core. At frame 3000, picture and memory are identical in all 39.</p>
+    <p class="sub"><a href="https://github.com/PSGM-Romhacking/mil_capivaras/blob/main/docs/compatibility.md" data-i18n="compat_more">How the tests were done and notes on each game →</a></p>
+    <div class="stats compat-stats">
+      <div><b>39/39</b><span data-i18n="compat_s1">games perfect</span></div>
+      <div><b>13/13</b><span data-i18n="compat_s2">commercial</span></div>
+      <div><b>26/26</b><span data-i18n="compat_s3">homebrews</span></div>
+    </div>
+    <input id="compat-q" class="search" type="search" placeholder="Search by name, serial or CRC" data-i18n-ph="compat_search" autocomplete="off">
+    <div class="tablewrap"><table class="games">
+      <thead><tr><th data-i18n="compat_c_game">Title</th><th data-i18n="compat_c_serial">Serial</th><th>CRC32</th><th data-i18n="compat_c_type">Type</th><th data-i18n="compat_c_year">Year</th><th data-i18n="compat_c_status">Status</th><th data-i18n="compat_c_links">Links</th></tr></thead>
+      <tbody id="compat-body">
+        <tr data-q="pooyan gpa-101 bd6edc48 casio"><td class="t">Pooyan<small>Casio</small></td><td class="m">GPA-101</td><td class="m">bd6edc48</td><td><span data-i18n="compat_t_com">Commercial</span></td><td>1982</td><td><span class="ok" data-i18n="compat_ok">✓ Perfect</span></td><td><span class="dash">—</span></td></tr>
+        <tr data-q="super cobra gpa-102 cdffc2cd casio"><td class="t">Super Cobra<small>Casio</small></td><td class="m">GPA-102</td><td class="m">cdffc2cd</td><td><span data-i18n="compat_t_com">Commercial</span></td><td>1981</td><td><span class="ok" data-i18n="compat_ok">✓ Perfect</span></td><td><span class="dash">—</span></td></tr>
+        <tr data-q="tutankham gpa-103 a0b606d8 casio"><td class="t">Tutankham<small>Casio</small></td><td class="m">GPA-103</td><td class="m">a0b606d8</td><td><span data-i18n="compat_t_com">Commercial</span></td><td>1982</td><td><span class="ok" data-i18n="compat_ok">✓ Perfect</span></td><td><span class="dash">—</span></td></tr>
+        <tr data-q="amidar gpa-104 c82628cc casio"><td class="t">Amidar<small>Casio</small></td><td class="m">GPA-104</td><td class="m">c82628cc</td><td><span data-i18n="compat_t_com">Commercial</span></td><td>1982</td><td><span class="ok" data-i18n="compat_ok">✓ Perfect</span></td><td><span class="dash">—</span></td></tr>
+        <tr data-q="dig dug gpa-105 a94f02fa casio"><td class="t">Dig Dug<small>Casio</small></td><td class="m">GPA-105</td><td class="m">a94f02fa</td><td><span data-i18n="compat_t_com">Commercial</span></td><td>1982</td><td><span class="ok" data-i18n="compat_ok">✓ Perfect</span></td><td><span class="dash">—</span></td></tr>
+        <tr data-q="warp &amp; warp gpa-106 2a0d4ad9 casio"><td class="t">Warp &amp; Warp<small>Casio</small></td><td class="m">GPA-106</td><td class="m">2a0d4ad9</td><td><span data-i18n="compat_t_com">Commercial</span></td><td>1981</td><td><span class="ok" data-i18n="compat_ok">✓ Perfect</span></td><td><span class="dash">—</span></td></tr>
+        <tr data-q="turpin gpa-107 a3aef98d casio"><td class="t">Turpin<small>Casio</small></td><td class="m">GPA-107</td><td class="m">a3aef98d</td><td><span data-i18n="compat_t_com">Commercial</span></td><td>1981?</td><td><span class="ok" data-i18n="compat_ok">✓ Perfect</span></td><td><span class="dash">—</span></td></tr>
+        <tr data-q="pachinko - ufo gpa-109 9ee981ab casio"><td class="t">Pachinko - UFO<small>Casio</small></td><td class="m">GPA-109</td><td class="m">9ee981ab</td><td><span data-i18n="compat_t_com">Commercial</span></td><td>1982</td><td><span class="ok" data-i18n="compat_ok">✓ Perfect</span></td><td><span class="dash">—</span></td></tr>
+        <tr data-q="fighting bug gpa-110 84986255 casio"><td class="t">Fighting Bug<small>Casio</small></td><td class="m">GPA-110</td><td class="m">84986255</td><td><span data-i18n="compat_t_com">Commercial</span></td><td>1982</td><td><span class="ok" data-i18n="compat_ok">✓ Perfect</span></td><td><span class="dash">—</span></td></tr>
+        <tr data-q="space panic gpa-111 23547111 casio"><td class="t">Space Panic<small>Casio</small></td><td class="m">GPA-111</td><td class="m">23547111</td><td><span data-i18n="compat_t_com">Commercial</span></td><td>1981?</td><td><span class="ok" data-i18n="compat_ok">✓ Perfect</span></td><td><span class="dash">—</span></td></tr>
+        <tr data-q="naughty boy gpa-112 43a13e99 casio"><td class="t">Naughty Boy<small>Casio</small></td><td class="m">GPA-112</td><td class="m">43a13e99</td><td><span data-i18n="compat_t_com">Commercial</span></td><td>198?</td><td><span class="ok" data-i18n="compat_ok">✓ Perfect</span></td><td><span class="dash">—</span></td></tr>
+        <tr data-q="dirty chameleon gpa-114 8e7fb358 casio"><td class="t">Dirty Chameleon<small>Casio</small></td><td class="m">GPA-114</td><td class="m">8e7fb358</td><td><span data-i18n="compat_t_com">Commercial</span></td><td>198?</td><td><span class="ok" data-i18n="compat_ok">✓ Perfect</span></td><td><span class="dash">—</span></td></tr>
+        <tr data-q="excite mahjong gpa-115 0d2f829c casio"><td class="t">Excite Mahjong<small>Casio</small></td><td class="m">GPA-115</td><td class="m">0d2f829c</td><td><span data-i18n="compat_t_com">Commercial</span></td><td>1982</td><td><span class="ok" data-i18n="compat_ok">✓ Perfect</span></td><td><span class="dash">—</span></td></tr>
+        <tr data-q="aerial  9d3ddb26 inufuto"><td class="t">Aerial<small>Inufuto</small></td><td class="m">—</td><td class="m">9d3ddb26</td><td><span data-i18n="compat_t_hb">Homebrew</span></td><td>2021</td><td><span class="ok" data-i18n="compat_ok">✓ Perfect</span></td><td><a href="https://inufuto.web.fc2.com/8bit/aerial/" data-i18n="compat_l_page">Page</a> · <a href="https://inufuto.web.fc2.com/8bit/pv1000/aerial.rom" data-i18n="compat_l_dl">Download</a></td></tr>
+        <tr data-q="antiair  1478db1a inufuto"><td class="t">AntiAir<small>Inufuto</small></td><td class="m">—</td><td class="m">1478db1a</td><td><span data-i18n="compat_t_hb">Homebrew</span></td><td>2024</td><td><span class="ok" data-i18n="compat_ok">✓ Perfect</span></td><td><a href="https://inufuto.web.fc2.com/8bit/antiair/" data-i18n="compat_l_page">Page</a> · <a href="https://inufuto.web.fc2.com/8bit/pv1000/antiair_rom.zip" data-i18n="compat_l_dl">Download</a></td></tr>
+        <tr data-q="ascend  f9f52261 inufuto"><td class="t">Ascend<small>Inufuto</small></td><td class="m">—</td><td class="m">f9f52261</td><td><span data-i18n="compat_t_hb">Homebrew</span></td><td>2022</td><td><span class="ok" data-i18n="compat_ok">✓ Perfect</span></td><td><a href="https://inufuto.web.fc2.com/8bit/ascend/" data-i18n="compat_l_page">Page</a> · <a href="https://inufuto.web.fc2.com/8bit/pv1000/ascend.rom" data-i18n="compat_l_dl">Download</a></td></tr>
+        <tr data-q="awass  a09322cc inufuto"><td class="t">Awass<small>Inufuto</small></td><td class="m">—</td><td class="m">a09322cc</td><td><span data-i18n="compat_t_hb">Homebrew</span></td><td>2026</td><td><span class="ok" data-i18n="compat_ok">✓ Perfect</span></td><td><a href="https://inufuto.web.fc2.com/8bit/awass/" data-i18n="compat_l_page">Page</a> · <a href="https://inufuto.web.fc2.com/8bit/pv1000/awass_rom.zip" data-i18n="compat_l_dl">Download</a></td></tr>
+        <tr data-q="battlot  48c78955 inufuto"><td class="t">Battlot<small>Inufuto</small></td><td class="m">—</td><td class="m">48c78955</td><td><span data-i18n="compat_t_hb">Homebrew</span></td><td>2022</td><td><span class="ok" data-i18n="compat_ok">✓ Perfect</span></td><td><a href="https://inufuto.web.fc2.com/8bit/battlot/" data-i18n="compat_l_page">Page</a> · <a href="https://inufuto.web.fc2.com/8bit/pv1000/battlot.rom" data-i18n="compat_l_dl">Download</a></td></tr>
+        <tr data-q="bootskell  8e3222fe inufuto"><td class="t">Bootskell<small>Inufuto</small></td><td class="m">—</td><td class="m">8e3222fe</td><td><span data-i18n="compat_t_hb">Homebrew</span></td><td>2022</td><td><span class="ok" data-i18n="compat_ok">✓ Perfect</span></td><td><a href="https://inufuto.web.fc2.com/8bit/bootskell/" data-i18n="compat_l_page">Page</a> · <a href="https://inufuto.web.fc2.com/8bit/pv1000/bootskell.rom" data-i18n="compat_l_dl">Download</a></td></tr>
+        <tr data-q="cacorm  adfdaf22 inufuto"><td class="t">Cacorm<small>Inufuto</small></td><td class="m">—</td><td class="m">adfdaf22</td><td><span data-i18n="compat_t_hb">Homebrew</span></td><td>2022</td><td><span class="ok" data-i18n="compat_ok">✓ Perfect</span></td><td><a href="https://inufuto.web.fc2.com/8bit/cacorm/" data-i18n="compat_l_page">Page</a> · <a href="https://inufuto.web.fc2.com/8bit/pv1000/cacorm.rom" data-i18n="compat_l_dl">Download</a></td></tr>
+        <tr data-q="cavit  e393d6db inufuto"><td class="t">Cavit<small>Inufuto</small></td><td class="m">—</td><td class="m">e393d6db</td><td><span data-i18n="compat_t_hb">Homebrew</span></td><td>2022</td><td><span class="ok" data-i18n="compat_ok">✓ Perfect</span></td><td><a href="https://inufuto.web.fc2.com/8bit/cavit/" data-i18n="compat_l_page">Page</a> · <a href="https://inufuto.web.fc2.com/8bit/pv1000/cavit.rom" data-i18n="compat_l_dl">Download</a></td></tr>
+        <tr data-q="cracky  8abdb1f5 inufuto"><td class="t">Cracky<small>Inufuto</small></td><td class="m">—</td><td class="m">8abdb1f5</td><td><span data-i18n="compat_t_hb">Homebrew</span></td><td>2023</td><td><span class="ok" data-i18n="compat_ok">✓ Perfect</span></td><td><a href="https://inufuto.web.fc2.com/8bit/cracky/" data-i18n="compat_l_page">Page</a> · <a href="https://inufuto.web.fc2.com/8bit/pv1000/cracky_rom.zip" data-i18n="compat_l_dl">Download</a></td></tr>
+        <tr data-q="demônios  b0b1390b 7f8f2ccf b87e2293 péricles s."><td class="t">Demônios<small>Péricles S.</small></td><td class="m">—</td><td class="m">b0b1390b <small>EN</small><br>7f8f2ccf <small>ES</small><br>b87e2293 <small>PT</small></td><td><span data-i18n="compat_t_hb">Homebrew</span></td><td>2026</td><td><span class="ok" data-i18n="compat_ok">✓ Perfect</span></td><td><a href="https://github.com/PSGM-Romhacking/pv-1000_demonios" data-i18n="compat_l_page">Page</a> · <a href="https://github.com/PSGM-Romhacking/pv-1000_demonios/releases/latest" data-i18n="compat_l_dl">Download</a></td></tr>
+        <tr data-q="guntus  8cfe7310 inufuto"><td class="t">Guntus<small>Inufuto</small></td><td class="m">—</td><td class="m">8cfe7310</td><td><span data-i18n="compat_t_hb">Homebrew</span></td><td>2022</td><td><span class="ok" data-i18n="compat_ok">✓ Perfect</span></td><td><a href="https://inufuto.web.fc2.com/8bit/guntus/" data-i18n="compat_l_page">Page</a> · <a href="https://inufuto.web.fc2.com/8bit/pv1000/guntus.rom" data-i18n="compat_l_dl">Download</a></td></tr>
+        <tr data-q="hopman  6f72e9ff inufuto"><td class="t">Hopman<small>Inufuto</small></td><td class="m">—</td><td class="m">6f72e9ff</td><td><span data-i18n="compat_t_hb">Homebrew</span></td><td>2023</td><td><span class="ok" data-i18n="compat_ok">✓ Perfect</span></td><td><a href="https://inufuto.web.fc2.com/8bit/hopman/" data-i18n="compat_l_page">Page</a> · <a href="https://inufuto.web.fc2.com/8bit/pv1000/hopman_rom.zip" data-i18n="compat_l_dl">Download</a></td></tr>
+        <tr data-q="lift  59a507c5 inufuto"><td class="t">Lift<small>Inufuto</small></td><td class="m">—</td><td class="m">59a507c5</td><td><span data-i18n="compat_t_hb">Homebrew</span></td><td>2021</td><td><span class="ok" data-i18n="compat_ok">✓ Perfect</span></td><td><a href="https://inufuto.web.fc2.com/8bit/lift/" data-i18n="compat_l_page">Page</a> · <a href="https://inufuto.web.fc2.com/8bit/pv1000/lift.rom" data-i18n="compat_l_dl">Download</a></td></tr>
+        <tr data-q="mazy  a7aea98b inufuto"><td class="t">Mazy<small>Inufuto</small></td><td class="m">—</td><td class="m">a7aea98b</td><td><span data-i18n="compat_t_hb">Homebrew</span></td><td>2021</td><td><span class="ok" data-i18n="compat_ok">✓ Perfect</span></td><td><a href="https://inufuto.web.fc2.com/8bit/mazy/" data-i18n="compat_l_page">Page</a> · <a href="https://inufuto.web.fc2.com/8bit/pv1000/mazy.rom" data-i18n="compat_l_dl">Download</a></td></tr>
+        <tr data-q="mazy2  6e6f9694 inufuto"><td class="t">Mazy2<small>Inufuto</small></td><td class="m">—</td><td class="m">6e6f9694</td><td><span data-i18n="compat_t_hb">Homebrew</span></td><td>2025</td><td><span class="ok" data-i18n="compat_ok">✓ Perfect</span></td><td><a href="https://inufuto.web.fc2.com/8bit/mazy2/" data-i18n="compat_l_page">Page</a> · <a href="https://inufuto.web.fc2.com/8bit/pv1000/mazy2_rom.zip" data-i18n="compat_l_dl">Download</a></td></tr>
+        <tr data-q="mieyen  c5fbd695 inufuto"><td class="t">Mieyen<small>Inufuto</small></td><td class="m">—</td><td class="m">c5fbd695</td><td><span data-i18n="compat_t_hb">Homebrew</span></td><td>2025</td><td><span class="ok" data-i18n="compat_ok">✓ Perfect</span></td><td><a href="https://inufuto.web.fc2.com/8bit/mieyen/" data-i18n="compat_l_page">Page</a> · <a href="https://inufuto.web.fc2.com/8bit/pv1000/mieyen_rom.zip" data-i18n="compat_l_dl">Download</a></td></tr>
+        <tr data-q="neuras  208817d1 inufuto"><td class="t">Neuras<small>Inufuto</small></td><td class="m">—</td><td class="m">208817d1</td><td><span data-i18n="compat_t_hb">Homebrew</span></td><td>2022</td><td><span class="ok" data-i18n="compat_ok">✓ Perfect</span></td><td><a href="https://inufuto.web.fc2.com/8bit/neuras/" data-i18n="compat_l_page">Page</a> · <a href="https://inufuto.web.fc2.com/8bit/pv1000/neuras.rom" data-i18n="compat_l_dl">Download</a></td></tr>
+        <tr data-q="osotos  629ba7e5 inufuto"><td class="t">Osotos<small>Inufuto</small></td><td class="m">—</td><td class="m">629ba7e5</td><td><span data-i18n="compat_t_hb">Homebrew</span></td><td>2024</td><td><span class="ok" data-i18n="compat_ok">✓ Perfect</span></td><td><a href="https://inufuto.web.fc2.com/8bit/osotos/" data-i18n="compat_l_page">Page</a> · <a href="https://inufuto.web.fc2.com/8bit/pv1000/osotos_rom.zip" data-i18n="compat_l_dl">Download</a></td></tr>
+        <tr data-q="pv-1000 control test  32c551cf péricles s."><td class="t">PV-1000 Control Test<small>Péricles S.</small></td><td class="m">—</td><td class="m">32c551cf</td><td><span data-i18n="compat_t_hb">Homebrew</span></td><td>2026</td><td><span class="ok" data-i18n="compat_ok">✓ Perfect</span></td><td><a href="https://github.com/PSGM-Romhacking/pv-1000_control_test_rom" data-i18n="compat_l_page">Page</a> · <a href="https://github.com/PSGM-Romhacking/pv-1000_control_test_rom/releases/latest" data-i18n="compat_l_dl">Download</a></td></tr>
+        <tr data-q="pvong  d575c7b9 joe_k"><td class="t">PVong<small>joe_k</small></td><td class="m">—</td><td class="m">d575c7b9</td><td><span data-i18n="compat_t_hb">Homebrew</span></td><td>2025</td><td><span class="ok" data-i18n="compat_ok">✓ Perfect</span></td><td><a href="https://github.com/joffb/pvong" data-i18n="compat_l_page">Page</a> · <a href="https://github.com/joffb/pvong/releases/download/0.1/pvong.bin" data-i18n="compat_l_dl">Download</a></td></tr>
+        <tr data-q="ruptus  f616befc inufuto"><td class="t">Ruptus<small>Inufuto</small></td><td class="m">—</td><td class="m">f616befc</td><td><span data-i18n="compat_t_hb">Homebrew</span></td><td>2021</td><td><span class="ok" data-i18n="compat_ok">✓ Perfect</span></td><td><a href="https://inufuto.web.fc2.com/8bit/ruptus/" data-i18n="compat_l_page">Page</a> · <a href="https://inufuto.web.fc2.com/8bit/pv1000/ruptus.rom" data-i18n="compat_l_dl">Download</a></td></tr>
+        <tr data-q="simon  62d0e79c kashtpr"><td class="t">Simon<small>KashtPR</small></td><td class="m">—</td><td class="m">62d0e79c</td><td><span data-i18n="compat_t_hb">Homebrew</span></td><td>2025</td><td><span class="ok" data-i18n="compat_ok">✓ Perfect</span></td><td><a href="https://forums.nesdev.org/viewtopic.php?p=303835#p303835" data-i18n="compat_l_page">Page</a> · <a href="https://forums.nesdev.org/viewtopic.php?p=303835#p303835" data-i18n="compat_l_dl">Download</a></td></tr>
+        <tr data-q="svellas  27c8d8a8 inufuto"><td class="t">Svellas<small>Inufuto</small></td><td class="m">—</td><td class="m">27c8d8a8</td><td><span data-i18n="compat_t_hb">Homebrew</span></td><td>2025</td><td><span class="ok" data-i18n="compat_ok">✓ Perfect</span></td><td><a href="https://inufuto.web.fc2.com/8bit/svellas/" data-i18n="compat_l_page">Page</a> · <a href="https://inufuto.web.fc2.com/8bit/pv1000/svellas_rom.zip" data-i18n="compat_l_dl">Download</a></td></tr>
+        <tr data-q="swordwork  5e36a9dc inufuto"><td class="t">SwordWork<small>Inufuto</small></td><td class="m">—</td><td class="m">5e36a9dc</td><td><span data-i18n="compat_t_hb">Homebrew</span></td><td>2026</td><td><span class="ok" data-i18n="compat_ok">✓ Perfect</span></td><td><a href="https://inufuto.web.fc2.com/8bit/sword/" data-i18n="compat_l_page">Page</a> · <a href="https://inufuto.web.fc2.com/8bit/pv1000/sword_rom.zip" data-i18n="compat_l_dl">Download</a></td></tr>
+        <tr data-q="uchotos  3ef1e5c3 inufuto"><td class="t">Uchotos<small>Inufuto</small></td><td class="m">—</td><td class="m">3ef1e5c3</td><td><span data-i18n="compat_t_hb">Homebrew</span></td><td>2026</td><td><span class="ok" data-i18n="compat_ok">✓ Perfect</span></td><td><a href="https://inufuto.web.fc2.com/8bit/uchotos/" data-i18n="compat_l_page">Page</a> · <a href="https://inufuto.web.fc2.com/8bit/pv1000/uchotos_rom.zip" data-i18n="compat_l_dl">Download</a></td></tr>
+        <tr data-q="yewdow  a9c8b257 inufuto"><td class="t">Yewdow<small>Inufuto</small></td><td class="m">—</td><td class="m">a9c8b257</td><td><span data-i18n="compat_t_hb">Homebrew</span></td><td>2023</td><td><span class="ok" data-i18n="compat_ok">✓ Perfect</span></td><td><a href="https://inufuto.web.fc2.com/8bit/yewdow/" data-i18n="compat_l_page">Page</a> · <a href="https://inufuto.web.fc2.com/8bit/pv1000/yewdow_rom.zip" data-i18n="compat_l_dl">Download</a></td></tr>
+        <tr id="compat-empty" hidden><td colspan="7" data-i18n="compat_none">No games found.</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+</div>
+</main>
+<footer>
+  <div class="wrap">
+    <p data-i18n="foot_lic">Free software under GPL-3.0 or later.</p>
+  </div>
+</footer>
+
+<script src="i18n.js"></script>
+<script src="compat.js"></script>
+</body>
+</html>
