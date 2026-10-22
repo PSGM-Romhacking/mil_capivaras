@@ -14,6 +14,8 @@ use crate::i18n::{tr, trf};
 #[derive(Deserialize, Default, Clone)]
 #[serde(default, deny_unknown_fields)]
 struct Texts {
+    /// "Fighting", "Role-playing"…: a word or two, in this language.
+    genre: Option<String>,
     description: Option<String>,
     notes: Option<String>,
 }
@@ -29,6 +31,8 @@ pub struct Sheet {
     pub publisher: Option<String>,
     pub developer: Option<String>,
     pub serial: Option<String>,
+    /// In the current language ("Fighting").
+    pub genre: Option<String>,
     /// "1 or 2 players", in the current language.
     pub players: Option<String>,
     pub description: Option<String>,
@@ -45,7 +49,11 @@ pub struct Sheets {
 
 /// The number of players as a phrase: the number is data, the words are the language's.
 fn players_text(n: u8) -> String {
-    if n <= 1 { tr("1 player") } else { trf("1 or {n} players", &[("n", &n)]) }
+    match n {
+        0 | 1 => tr("1 player"),
+        2 => trf("1 or {n} players", &[("n", &n)]),
+        _ => trf("1 to {n} players", &[("n", &n)]),
+    }
 }
 
 impl Sheets {
@@ -81,6 +89,7 @@ impl Sheets {
             publisher: g.publisher.clone(),
             developer: g.developer.clone(),
             serial: g.serial.clone(),
+            genre: t.genre,
             players: g.players.map(players_text),
             description: t.description,
             notes: t.notes,
@@ -105,7 +114,7 @@ pub fn check(sys: &SystemInfo) -> Vec<String> {
             out.push(format!("missing game texts \"{code}\""));
         }
     }
-    let shape = |t: &Texts| (t.description.is_some(), t.notes.is_some());
+    let shape = |t: &Texts| (t.genre.is_some(), t.description.is_some(), t.notes.is_some());
     if let Some((first, base)) = langs.first() {
         for (code, m) in &langs {
             for (game, t) in m {
@@ -145,6 +154,7 @@ mod tests {
         short_name: "T",
         extensions: &["bin"],
         thumbnails: "",
+        cover_aspect: 0.66,
         players: 1,
         buttons: &[emu_api::Button { id: PadButton::B, label: "Fire 1" }],
         width: 1,
@@ -159,6 +169,8 @@ mod tests {
             ("pt", r#"{"game": {"description": "Um jogo."}}"#),
             ("es", r#"{"game": {"description": "Un juego."}}"#),
         ],
+        bios: &[],
+        multi_file_roms: false,
         create: |_| unreachable!(),
     };
     static SYS: SystemInfo = BASE;

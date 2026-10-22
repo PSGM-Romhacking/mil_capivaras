@@ -16,6 +16,8 @@ impl App {
             .show_separator_line(false)
             .show(ui, |ui| {
                 egui::MenuBar::new().style(menu::style).config(egui::containers::menu::MenuConfig::new().style(menu::style)).ui(ui, |ui| {
+                    // a little room before and after each title (also widens the hover area)
+                    ui.spacing_mut().button_padding.x = 10.0;
                     open |= ui
                         .menu_button(tr("File"), |ui| {
                             menu::begin(ui);
@@ -42,6 +44,9 @@ impl App {
                             }
                             if menu::item(ui, &l, &tr("Refresh game list"), &self.sc(Func::RefreshGames), Mark::None, true) {
                                 self.refresh_games();
+                            }
+                            if menu::item(ui, &l, &tr("Play history…"), "", Mark::None, true) {
+                                self.dialog = Dialog::History(None);
                             }
                             let recent: Vec<PathBuf> = self.cfg.recent.iter().filter(|g| g.is_file()).cloned().collect();
                             let mut pick = None;
@@ -131,7 +136,7 @@ impl App {
                                     self.history.clear();
                                 }
                             }
-                            // the core's settings (e.g. the PV-1000 model), one submenu each
+                            // the core's settings (e.g. the hardware model), one submenu each
                             for o in self.core.options() {
                                 let cur = self.cfg.core_options.get(o.key).map_or(o.values[0].0, String::as_str).to_string();
                                 let cur_label = o.values.iter().find(|v| v.0 == cur).map_or(o.values[0].1, |v| v.1);
@@ -165,6 +170,49 @@ impl App {
                         })
                         .inner
                         .is_some();
+                    // systems with a BIOS: where it is and what is missing
+                    if !self.sys.bios.is_empty() {
+                        open |= ui
+                            .menu_button(tr("BIOS"), |ui| {
+                                menu::begin(ui);
+                                if menu::item(ui, &l, &tr("Choose BIOS folder…"), "", Mark::None, true) {
+                                    self.choose_bios_folder(None);
+                                }
+                                if menu::item(ui, &l, &tr("Open BIOS folder"), "", Mark::None, true) {
+                                    open_folder(Folder::Bios.dir());
+                                }
+                                if menu::item(ui, &l, &tr("Check again"), "", Mark::None, true) {
+                                    self.bios_found = None;
+                                }
+                                menu::separator(ui, &l);
+                                let folder = Folder::Bios.dir().map_or_else(|| "?".to_string(), |d| d.display().to_string());
+                                menu::note(ui, &l, &trf("Folder: {folder}", &[("folder", &folder)]));
+                                let found = self.bios_found();
+                                let n = found.iter().filter(|&&f| f).count();
+                                menu::note(ui, &l, &trf("{n} of {total} files found (✓); click one to copy its name and CRC32", &[("n", &n), ("total", &found.len())]));
+                                menu::separator(ui, &l);
+                                let mut copy = None;
+                                // size right-aligned in a fixed width, so the CRC32 column lines up
+                                let size_w = self.sys.bios.iter().map(|b| size_text(b.size).chars().count()).max().unwrap_or(0);
+                                for (b, ok) in self.sys.bios.iter().zip(&found) {
+                                    let state = if *ok { String::new() } else if b.required { format!(" — {}", tr("missing")) } else { format!(" — {}", tr("missing (optional)")) };
+                                    let detail = format!("{:>size_w$}  CRC32 {:08x}", size_text(b.size), b.crc32);
+                                    if menu::item_mono(ui, &l, &format!("{}{state}", b.name), &detail, Mark::Check(*ok)) {
+                                        copy = Some(format!("{} {:08x}", b.name, b.crc32));
+                                    }
+                                }
+                                menu::separator(ui, &l);
+                                if menu::item(ui, &l, &tr("Copy list"), "", Mark::None, true) {
+                                    copy = Some(self.bios_report());
+                                }
+                                if let Some(text) = copy {
+                                    ctx.copy_text(text);
+                                    self.notify(tr("Copied to the clipboard"));
+                                }
+                            })
+                            .inner
+                            .is_some();
+                    }
                     open |= ui
                         .menu_button(tr("Audio"), |ui| {
                             menu::begin(ui);

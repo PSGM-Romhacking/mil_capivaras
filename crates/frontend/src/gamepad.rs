@@ -670,12 +670,13 @@ mod tests {
     use super::*;
     use emu_api::{Button, Core};
 
-    /// Test system: only B, A, Select, Start and directions (like the PV-1000).
+    /// Test system: only B, A, Select, Start and directions (a small console).
     static SYS: SystemInfo = SystemInfo {
         name: "Test",
         short_name: "T",
         extensions: &["bin"],
         thumbnails: "",
+        cover_aspect: 0.66,
         players: 2,
         buttons: &[
             Button { id: PadButton::Up, label: "Up" },
@@ -695,6 +696,8 @@ mod tests {
         fps_den: 1,
         game_info: |_| None,
         game_texts: &[],
+        bios: &[],
+        multi_file_roms: false,
         create: |_| -> Box<dyn Core> { unreachable!() },
     };
 

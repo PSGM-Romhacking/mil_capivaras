@@ -1,5 +1,6 @@
 //! Screenshots for the documentation: with `EMU_DOCSHOTS=<folder>` and
-//! `EMU_DOCSHOTS_GAME=<rom>`, the app walks through a fixed list of screens by itself
+//! `EMU_DOCSHOTS_GAME=<rom>` (and optionally `EMU_DOCSHOTS_SEL=<n>`, the cover selected in
+//! couch mode, counting from 0), the app walks through a fixed list of screens by itself
 //! (library, game with each frame, info sheet, folders, debugger, cheats), saves the main window as
 //! a PNG for each and closes. Only the app's own window is captured; the debugger and
 //! cheats contents are drawn in it, since eframe can't capture separate windows.
@@ -18,9 +19,9 @@ use super::{App, Dialog};
 const SCENES: [(&str, Scene); 14] = [
     ("library-covers", Scene::Library(crate::covers::Art::Boxart)),
     ("library-screens", Scene::Library(crate::covers::Art::Snap)),
+    ("library-list", Scene::List),
     ("couch-library", Scene::Couch(false)),
     ("game-tv", Scene::Game("tv")),
-    ("game-console", Scene::Game("console")),
     ("couch-menu", Scene::Couch(true)),
     ("game-info", Scene::Info),
     ("folders", Scene::Folders),
@@ -35,6 +36,8 @@ const SCENES: [(&str, Scene); 14] = [
 #[derive(Clone, Copy)]
 enum Scene {
     Library(crate::covers::Art),
+    /// The library as a list.
+    List,
     Game(&'static str),
     Info,
     /// Emulation › Folders…
@@ -44,7 +47,7 @@ enum Scene {
     /// The cheats on a tab (true = the RAM search).
     Cheats(bool),
     /// Couch mode (without going fullscreen): the library with a cover selected, or the
-    /// quick menu over the game (true).
+    /// quick menu over the game, with no frame (true).
     Couch(bool),
 }
 
@@ -114,16 +117,18 @@ impl App {
         self.pause_unfocused = false;
         self.couch = false;
         self.nav.quick = None;
+        self.library_list = false;
         match scene {
             Scene::Library(art) => self.library_art = art,
+            Scene::List => self.library_list = true,
             Scene::Couch(menu) => {
                 self.couch = true;
                 self.library_art = crate::covers::Art::Boxart;
                 self.nav.active = true;
-                self.nav.sel = 4;
+                self.nav.sel = std::env::var("EMU_DOCSHOTS_SEL").ok().and_then(|v| v.parse().ok()).unwrap_or(4);
                 self.nav.moved = true;
                 if menu {
-                    self.frame = "tv".into();
+                    self.frame = "none".into();
                     self.nav.quick = Some(1);
                 }
             }

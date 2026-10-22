@@ -58,7 +58,7 @@ impl Default for Prefs {
             rewind: true,
             slot: 1,
             filter: "none".into(),
-            open_last: true,
+            open_last: false,
             soft_audio: true,
             language: crate::i18n::DEFAULT.into(),
             pause_unfocused: true,
@@ -179,10 +179,14 @@ pub enum Folder {
     Languages,
     Screenshots,
     Recordings,
+    /// Battery saves of the cartridges (`<game>.sav`), for systems that have them.
+    Saves,
+    /// System files (BIOS), for systems that need them (`SystemInfo::bios`).
+    Bios,
 }
 
 impl Folder {
-    pub const ALL: [Folder; 6] = [Folder::States, Folder::Cheats, Folder::Covers, Folder::Languages, Folder::Screenshots, Folder::Recordings];
+    pub const ALL: [Folder; 8] = [Folder::States, Folder::Cheats, Folder::Covers, Folder::Languages, Folder::Screenshots, Folder::Recordings, Folder::Saves, Folder::Bios];
 
     /// Key in `Config::dirs`.
     pub fn key(self) -> &'static str {
@@ -193,6 +197,8 @@ impl Folder {
             Folder::Languages => "languages",
             Folder::Screenshots => "screenshots",
             Folder::Recordings => "recordings",
+            Folder::Saves => "saves",
+            Folder::Bios => "bios",
         }
     }
 
@@ -205,6 +211,8 @@ impl Folder {
             Folder::Languages => "Languages",
             Folder::Screenshots => "Screenshots",
             Folder::Recordings => "Recordings",
+            Folder::Saves => "Battery saves",
+            Folder::Bios => "BIOS",
         }
     }
 
@@ -335,7 +343,7 @@ mod tests {
 
     #[test]
     fn move_tree_merges_without_overwriting() {
-        let base = std::env::temp_dir().join(format!("mil_capivaras_move_{}", std::process::id()));
+        let base = std::env::temp_dir().join(format!("emu_frontend_move_{}", std::process::id()));
         let (src, dst) = (base.join("src"), base.join("dst"));
         std::fs::create_dir_all(src.join("states")).unwrap();
         std::fs::create_dir_all(src.join("empty")).unwrap();

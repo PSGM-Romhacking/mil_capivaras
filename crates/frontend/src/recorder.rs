@@ -233,7 +233,7 @@ fn cleanup(files: &[&Path]) {
 mod tests {
     use super::*;
 
-    /// PV-1000 format (224×224, 71590909/1202436 fps), used in the tests.
+    /// 224×224 at 71590909/1202436 fps (a typical system), used in the tests.
     const FMT: VideoFormat = VideoFormat { width: 224, height: 224, fps_num: 71_590_909, fps_den: 1_202_436 };
 
     /// Records 2 s of MP4 with synthetic frames and sound (needs ffmpeg; otherwise, skips).

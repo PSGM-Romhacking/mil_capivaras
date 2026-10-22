@@ -35,6 +35,16 @@ pub fn langs() -> Vec<(&'static str, &'static str)> {
     LANGS.into_iter().chain(USER.read().unwrap_or_else(|e| e.into_inner()).iter().copied()).collect()
 }
 
+/// Adds the app's own texts (the system's buttons, "About", command line...) to a built-in
+/// language: `json` is a catalog like `assets/i18n/<code>.json` (English text → translation).
+/// Call it right after `brand::set`, once per language. Unknown codes and invalid JSON are
+/// ignored (the texts stay in English).
+pub fn add_catalog(code: &str, json: &str) {
+    let Some(&(code, _)) = LANGS.iter().find(|(c, _)| *c == code) else { return };
+    let Ok(cat) = serde_json::from_str::<HashMap<String, String>>(json) else { return };
+    CATALOGS.write().unwrap_or_else(|e| e.into_inner()).entry(code).or_default().extend(cat);
+}
+
 /// Reads the user's catalogs, `<dir>/<code>.json`: the same format as the built-in ones
 /// (English text → translation), plus `"@name"` with the language's name ("Français").
 /// The code is the file name ("fr", "pt-PT"); a built-in code corrects that language.
@@ -156,7 +166,7 @@ mod tests {
     /// A user file adds a language with its name and can correct a built-in one.
     #[test]
     fn user_languages() {
-        let dir = std::env::temp_dir().join(format!("mil_capivaras_langs_{}", std::process::id()));
+        let dir = std::env::temp_dir().join(format!("emu_frontend_langs_{}", std::process::id()));
         std::fs::create_dir_all(&dir).unwrap();
         std::fs::write(dir.join("fr.json"), r#"{"@name": "Français", "Quit": "Quitter", "Pause": ""}"#).unwrap();
         std::fs::write(dir.join("broken.json"), "{").unwrap();

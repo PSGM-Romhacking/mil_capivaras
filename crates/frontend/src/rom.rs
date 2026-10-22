@@ -1,11 +1,14 @@
-//! Cartridge reading: .pv1/.bin/.rom directly, or the file inside a .zip/.7z.
+//! Cartridge reading: the file directly, or the file(s) inside a .zip/.7z; system files
+//! (BIOS) found by CRC32.
 
 use std::io::Read;
 
 use crate::i18n::trf;
 use std::path::{Path, PathBuf};
 
-pub fn read(path: &Path) -> Result<Vec<u8>, String> {
+/// The game's ROM. With `multi` (`SystemInfo::multi_file_roms`) a .zip holding several
+/// files is one game on several chips: they are joined, largest first.
+pub fn read(path: &Path, multi: bool) -> Result<Vec<u8>, String> {
     let ext = |x: &str| path.extension().is_some_and(|e| e.eq_ignore_ascii_case(x));
     if ext("7z") {
         return read_7z(path);
@@ -15,15 +18,57 @@ pub fn read(path: &Path) -> Result<Vec<u8>, String> {
     }
     let f = std::fs::File::open(path).map_err(|e| format!("{}: {e}", path.display()))?;
     let mut z = zip::ZipArchive::new(f).map_err(|e| trf("{file}: invalid zip ({error})", &[("file", &path.display()), ("error", &e)]))?;
+    let mut parts = Vec::new();
     for i in 0..z.len() {
         let mut e = z.by_index(i).map_err(|e| e.to_string())?;
         if e.is_file() {
             let mut v = Vec::new();
             e.read_to_end(&mut v).map_err(|e| e.to_string())?;
-            return Ok(v);
+            if !multi {
+                return Ok(v);
+            }
+            parts.push(v);
         }
     }
-    Err(trf("{file}: empty zip", &[("file", &path.display())]))
+    if parts.is_empty() {
+        return Err(trf("{file}: empty zip", &[("file", &path.display())]));
+    }
+    parts.sort_by_key(|p| std::cmp::Reverse(p.len()));
+    Ok(parts.concat())
+}
+
+/// Looks for the system files of `list` by CRC32 in `dirs`: loose files and the entries of
+/// .zip files (their CRC is read from the zip directory, nothing is unpacked until it
+/// matches). Files larger than `max_size` are skipped. Returns one slot per entry of `list`.
+pub fn find_bios(list: &[emu_api::BiosFile], dirs: &[(PathBuf, u64)]) -> Vec<Option<Vec<u8>>> {
+    let mut found: Vec<Option<Vec<u8>>> = vec![None; list.len()];
+    let slot = |crc: u32, found: &[Option<Vec<u8>>]| list.iter().position(|b| b.crc32 == crc).filter(|&i| found[i].is_none());
+    for (dir, max_size) in dirs {
+        let Ok(entries) = std::fs::read_dir(dir) else { continue };
+        for entry in entries.flatten() {
+            let p = entry.path();
+            if !p.is_file() || entry.metadata().map_or(true, |m| m.len() > *max_size) {
+                continue;
+            }
+            if p.extension().is_some_and(|e| e.eq_ignore_ascii_case("zip")) {
+                let Ok(mut z) = std::fs::File::open(&p).map_err(|_| ()).and_then(|f| zip::ZipArchive::new(f).map_err(|_| ())) else { continue };
+                for i in 0..z.len() {
+                    let Ok(mut e) = z.by_index(i) else { continue };
+                    if let Some(k) = slot(e.crc32(), &found) {
+                        let mut v = Vec::new();
+                        if e.read_to_end(&mut v).is_ok() && emu_api::crc32(&v) == list[k].crc32 {
+                            found[k] = Some(v);
+                        }
+                    }
+                }
+            } else if let Ok(v) = std::fs::read(&p)
+                && let Some(k) = slot(emu_api::crc32(&v), &found)
+            {
+                found[k] = Some(v);
+            }
+        }
+    }
+    found
 }
 
 /// Largest file inside the .7z.

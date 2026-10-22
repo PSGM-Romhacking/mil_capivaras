@@ -227,7 +227,7 @@ impl App {
         let k = if self.couch { 1.5 } else { 1.0 };
         egui::Area::new(egui::Id::unique("quick_menu")).order(egui::Order::Foreground).anchor(egui::Align2::CENTER_CENTER, Vec2::ZERO).show(ctx, |ui| {
             egui::Frame::new().fill(l.p.bg_sidebar).stroke(Stroke::new(1.0, l.p.border)).inner_margin(egui::Margin::same(16)).show(ui, |ui| {
-                ui.set_width(280.0 * k);
+                ui.set_width(220.0 * k);
                 ui.label(RichText::new(tr("Menu")).font(bold(l.f.lg * k)).color(l.p.text_section));
                 ui.add_space(6.0);
                 for (i, e) in entries.iter().enumerate() {
@@ -249,8 +249,10 @@ impl App {
                     }
                 }
                 ui.add_space(6.0);
-                let footer = if self.menu_combo { "A: choose · B or Home: back · Select + Start (hold): close" } else { "A: choose · B or Home: back" };
-                ui.label(RichText::new(tr(footer)).size(l.f.sm * k).color(l.p.text_muted));
+                ui.label(RichText::new(tr("A: choose · B or Home: back")).size(l.f.sm * k).color(l.p.text_muted));
+                if self.menu_combo {
+                    ui.label(RichText::new(tr("Select + Start (hold): close")).size(l.f.sm * k).color(l.p.text_muted));
+                }
             });
         });
         self.nav.quick = Some(sel);
@@ -286,10 +288,20 @@ impl App {
         self.notify(tr(msg));
     }
 
+    /// Next view of the library: box art › title screen › gameplay › list › box art.
     pub(super) fn next_library_art(&mut self) {
         let all = crate::covers::Art::ALL;
-        let i = all.iter().position(|&a| a == self.library_art).unwrap_or(0);
-        self.library_art = all[(i + 1) % all.len()];
+        if self.library_list {
+            self.library_list = false;
+            self.library_art = all[0];
+        } else {
+            let i = all.iter().position(|&a| a == self.library_art).unwrap_or(0);
+            if i + 1 == all.len() {
+                self.library_list = true;
+            } else {
+                self.library_art = all[i + 1];
+            }
+        }
         self.nav.moved = true;
     }
 
@@ -310,7 +322,8 @@ impl App {
         let l = self.look;
         egui::Area::new(egui::Id::unique("couch_hints")).order(egui::Order::Foreground).anchor(egui::Align2::CENTER_BOTTOM, Vec2::new(0.0, -10.0)).interactable(false).show(ctx, |ui| {
             egui::Frame::new().fill(Color32::from_black_alpha(170)).inner_margin(egui::Margin::symmetric(14, 6)).show(ui, |ui| {
-                ui.label(RichText::new(text).size(l.f.md * 1.2).color(l.p.text_main));
+                // one line, never wrapped in the middle of a hint
+                ui.add(egui::Label::new(RichText::new(text).size(l.f.md * 1.2).color(l.p.text_main)).wrap_mode(egui::TextWrapMode::Extend));
             });
         });
     }

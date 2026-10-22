@@ -89,6 +89,11 @@ pub fn own(art: Art, game: &str) -> Option<PathBuf> {
     p.is_file().then_some(p)
 }
 
+/// The user's own image under the first of these names that has one.
+pub fn own_any(art: Art, names: &[&str]) -> Option<PathBuf> {
+    names.iter().find_map(|n| own(art, n))
+}
+
 /// Per-system cache: `cache/covers/<libretro system>/<type>/<game>.png`.
 fn paths(system: &str, art: Art, game: &str) -> Option<(PathBuf, PathBuf)> {
     let dir = cache_dir()?.join(system).join(art.dir());
@@ -97,7 +102,7 @@ fn paths(system: &str, art: Art, game: &str) -> Option<(PathBuf, PathBuf)> {
 }
 
 pub struct Covers {
-    /// The system's folder in libretro-thumbnails ("Casio - PV-1000").
+    /// The system's folder in libretro-thumbnails (e.g. "Casio - PV-1000").
     system: String,
     tx: Sender<(Art, String)>,
     asked: Mutex<HashSet<(Art, String)>>,
@@ -175,7 +180,7 @@ mod tests {
     #[test]
     #[ignore]
     fn real_covers() {
-        let dir = std::env::temp_dir().join(format!("mil_capivaras_covers_{}", std::process::id()));
+        let dir = std::env::temp_dir().join(format!("emu_frontend_covers_{}", std::process::id()));
         unsafe { std::env::set_var("XDG_CONFIG_HOME", &dir) };
         let c = Covers::start("Casio - PV-1000");
         let wait = |art, game: &str| {

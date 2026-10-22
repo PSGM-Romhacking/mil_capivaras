@@ -11,7 +11,7 @@
 //! - `state_loaded`: in hardcore mode, loading states, rewind and fast
 //!   forward are forbidden; in softcore, `rc_client_deserialize_progress`.
 //!
-//! The PV-1000 must be among RetroAchievements' consoles for there to be
+//! The system must be among RetroAchievements' consoles for there to be
 //! official achievements; the map in `memory.rs` follows the format they use.
 #![allow(dead_code)] // groundwork for RetroAchievements: used once rcheevos is in
 

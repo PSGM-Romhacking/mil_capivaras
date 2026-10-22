@@ -33,17 +33,25 @@ pub fn begin(ui: &mut Ui) {
 }
 
 /// Row width: the default, or more if text + shortcut doesn't fit.
-fn width(ui: &Ui, l: &Look, text: &str, shortcut: &str) -> f32 {
+fn width(ui: &Ui, l: &Look, text: &str, shortcut: &str, mono: bool) -> f32 {
     let font = FontId::proportional(l.f.md);
-    let tw = |t: &str| ui.fonts_mut(|f| f.layout_no_wrap(t.to_owned(), font.clone(), egui::Color32::WHITE).size().x);
-    let need = GUTTER + tw(text) + if shortcut.is_empty() { 0.0 } else { 32.0 + tw(shortcut) } + 34.0;
+    let tw = |t: &str, font: FontId| ui.fonts_mut(|f| f.layout_no_wrap(t.to_owned(), font, egui::Color32::WHITE).size().x);
+    let right = if shortcut.is_empty() { 0.0 } else { 32.0 + tw(shortcut, right_font(l, mono)) };
+    let need = GUTTER + tw(text, font) + right + 34.0;
     need.max(MIN_W).max(ui.min_rect().width())
 }
 
 /// Draws the row; returns the response and the background index (filled in later,
 /// once it's known whether it's hovered or has an open submenu).
-fn row(ui: &mut Ui, l: &Look, text: &str, shortcut: &str, mark: Mark, enabled: bool, arrow: bool) -> (Response, egui::layers::ShapeIdx, Rect) {
-    let w = width(ui, l, text, shortcut);
+/// Font of the right column: the shortcut, or a monospace detail (sizes, hashes) whose
+/// columns line up from one row to the next.
+fn right_font(l: &Look, mono: bool) -> FontId {
+    if mono { FontId::monospace(l.f.md * 0.92) } else { FontId::proportional(l.f.md) }
+}
+
+#[allow(clippy::too_many_arguments)]
+fn row(ui: &mut Ui, l: &Look, text: &str, shortcut: &str, mark: Mark, enabled: bool, arrow: bool, mono: bool) -> (Response, egui::layers::ShapeIdx, Rect) {
+    let w = width(ui, l, text, shortcut, mono);
     let sense = if enabled { Sense::click() } else { Sense::hover() };
     let (rect, resp) = ui.allocate_exact_size(vec2(w, ROW_H), sense);
     let painter = ui.painter();
@@ -67,7 +75,7 @@ fn row(ui: &mut Ui, l: &Look, text: &str, shortcut: &str, mark: Mark, enabled: b
         let a = Rect::from_center_size(pos2(rect.right() - 14.0, cy), Vec2::splat(12.0));
         painter.add(SubMenuButton::arrow_shape(a, fg));
     } else if !shortcut.is_empty() {
-        painter.text(pos2(rect.right() - 14.0, cy), Align2::RIGHT_CENTER, shortcut, font, l.p.text_muted);
+        painter.text(pos2(rect.right() - 14.0, cy), Align2::RIGHT_CENTER, shortcut, right_font(l, mono), l.p.text_muted);
     }
     (resp, bg, rect)
 }
@@ -78,7 +86,17 @@ fn highlight(ui: &Ui, l: &Look, bg: egui::layers::ShapeIdx, rect: Rect) {
 
 /// Clickable item; closes the menu on click.
 pub fn item(ui: &mut Ui, l: &Look, text: &str, shortcut: &str, mark: Mark, enabled: bool) -> bool {
-    let (resp, bg, rect) = row(ui, l, text, shortcut, mark, enabled, false);
+    item_with(ui, l, text, shortcut, mark, enabled, false)
+}
+
+/// Clickable item whose right column is a detail in a monospace font (sizes, hashes),
+/// aligned with the rows above and below.
+pub fn item_mono(ui: &mut Ui, l: &Look, text: &str, detail: &str, mark: Mark) -> bool {
+    item_with(ui, l, text, detail, mark, true, true)
+}
+
+fn item_with(ui: &mut Ui, l: &Look, text: &str, shortcut: &str, mark: Mark, enabled: bool, mono: bool) -> bool {
+    let (resp, bg, rect) = row(ui, l, text, shortcut, mark, enabled, false, mono);
     if enabled && resp.hovered() {
         highlight(ui, l, bg, rect);
     }
@@ -91,12 +109,12 @@ pub fn item(ui: &mut Ui, l: &Look, text: &str, shortcut: &str, mark: Mark, enabl
 
 /// Informational text (disabled), e.g. "no games in this folder".
 pub fn note(ui: &mut Ui, l: &Look, text: &str) {
-    row(ui, l, text, "", Mark::None, false, false);
+    row(ui, l, text, "", Mark::None, false, false, false);
 }
 
 /// Submenu with an arrow; opens on mouse hover.
 pub fn submenu<R>(ui: &mut Ui, l: &Look, text: &str, enabled: bool, content: impl FnOnce(&mut Ui) -> R) -> Option<R> {
-    let (resp, bg, rect) = row(ui, l, text, "", Mark::None, enabled, true);
+    let (resp, bg, rect) = row(ui, l, text, "", Mark::None, enabled, true, false);
     if !enabled {
         return None;
     }

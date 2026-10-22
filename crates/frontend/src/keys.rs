@@ -114,6 +114,7 @@ mod tests {
         short_name: "T",
         extensions: &["bin"],
         thumbnails: "",
+        cover_aspect: 0.66,
         players: 2,
         buttons: &[Button { id: PadButton::Up, label: "Up" }, Button { id: PadButton::B, label: "Fire 1" }, Button { id: PadButton::A, label: "Fire 2" }],
         width: 1,
@@ -124,6 +125,8 @@ mod tests {
         fps_den: 1,
         game_info: |_| None,
         game_texts: &[],
+        bios: &[],
+        multi_file_roms: false,
         create: |_| -> Box<dyn Core> { unreachable!() },
     };
 

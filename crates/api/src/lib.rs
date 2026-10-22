@@ -99,14 +99,17 @@ pub struct Frame<'a> {
 
 /// Description of the emulated system (the "retro_get_system_info" + "av_info").
 pub struct SystemInfo {
-    /// Full name ("Casio PV-1000").
+    /// Full name ("Example Console").
     pub name: &'static str,
-    /// Short name ("PV-1000").
+    /// Short name ("Example").
     pub short_name: &'static str,
     /// Accepted ROM extensions, without the dot (.zip/.7z archives are handled by the frontend).
     pub extensions: &'static [&'static str],
-    /// System folder in libretro-thumbnails ("Casio - PV-1000").
+    /// System folder in libretro-thumbnails ("Example - Console").
     pub thumbnails: &'static str,
+    /// Shape of the box art in the library (width / height): about 0.66 for portrait boxes,
+    /// 1.3 for landscape cases. The frontend sizes the covers from it.
+    pub cover_aspect: f32,
     pub players: usize,
     /// Buttons used, in display order.
     pub buttons: &'static [Button],
@@ -125,8 +128,26 @@ pub struct SystemInfo {
     /// The games' texts, one JSON per language: (code, JSON), keyed by `GameInfo::id`
     /// (format in `docs/sheets.md`).
     pub game_texts: &'static [(&'static str, &'static str)],
+    /// System files (BIOS, boot ROMs) the core can use; empty if none. The frontend
+    /// looks for them by CRC32 and hands them to `Core::set_bios` before each `load`.
+    pub bios: &'static [BiosFile],
+    /// A .zip/.7z holding several ROM files is one game spread over several chips: the
+    /// frontend joins the files, largest first. When false it takes a single file.
+    pub multi_file_roms: bool,
     /// Creates the core for the frontend's audio rate.
     pub create: fn(sample_rate: u32) -> Box<dyn Core>,
+}
+
+/// A system file (BIOS, boot ROM). The frontend finds it by CRC32 in its BIOS folder and
+/// in the game's folder, loose or inside a .zip, whatever the file is called.
+pub struct BiosFile {
+    /// Usual file name (shown to the user when it is missing).
+    pub name: &'static str,
+    pub crc32: u32,
+    /// Size in bytes (shown to the user; 0 = not known).
+    pub size: u32,
+    /// Without it no game starts: the frontend shows what is missing instead.
+    pub required: bool,
 }
 
 /// Data of a known game, the same in every language. The texts (description, notes)
@@ -242,6 +263,20 @@ pub trait Core {
     fn debug_views(&self) -> Vec<DebugView> {
         Vec::new()
     }
+    /// The system files found, in `SystemInfo::bios` order (`None` = not found). Called
+    /// before every `load`; cores without BIOS ignore it.
+    fn set_bios(&mut self, _files: &[Option<Vec<u8>>]) {}
+    /// Battery-backed save memory of the loaded game (cartridge SRAM), if any. The
+    /// frontend keeps it in a .sav file and writes it when it changes.
+    fn battery_ram(&self) -> Option<&[u8]> {
+        None
+    }
+    /// The same memory, writable (libretro frontends load the save straight into it).
+    fn battery_ram_mut(&mut self) -> Option<&mut [u8]> {
+        None
+    }
+    /// Puts back the contents of a .sav file; called right after `load`.
+    fn load_battery(&mut self, _data: &[u8]) {}
     /// Sound channels the debugger can mute (source text, goes through `tr`).
     fn sound_channels(&self) -> &'static [&'static str] {
         &[]

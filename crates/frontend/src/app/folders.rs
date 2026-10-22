@@ -24,8 +24,13 @@ impl App {
             let custom = self.cfg.dirs.get(f.key());
             (f, f.dir(), custom.is_some(), custom.is_some_and(|c| self.cfg.unreachable.contains(c)))
         };
+        // battery saves and BIOS only for the systems that have them
+        let mut progress = vec![info(Folder::States), info(Folder::Cheats), info(Folder::Saves)];
+        if !self.sys.bios.is_empty() {
+            progress.push(info(Folder::Bios));
+        }
         let groups = [
-            (tr("Games and progress"), vec![info(Folder::States), info(Folder::Cheats)], None),
+            (tr("Games and progress"), progress, None),
             (tr("Your files"), vec![info(Folder::Covers), info(Folder::Languages)], Some(tr("Covers: Named_Boxarts, Named_Titles and Named_Snaps folders, PNGs named after the game. Languages: Help › Language › Export translation template…"))),
             (tr("Screenshots and recordings"), vec![info(Folder::Screenshots), info(Folder::Recordings)], None),
         ];
@@ -160,6 +165,7 @@ impl App {
         };
         self.cfg.apply_dirs();
         self.cfg.save();
+        self.bios_found = None;
         if f == Folder::Languages {
             for e in crate::i18n::load_user(&target) {
                 self.notify(e);

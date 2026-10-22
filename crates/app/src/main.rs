@@ -34,7 +34,6 @@ const ICON: &[u8] = include_bytes!("../../../assets/icons/pv1000-256.png");
 const BEZELS: &[brand::Bezel] = &[
     // TV only at the sides: the game fills the whole height
     brand::Bezel { key: "tv", label: "TV", png: include_bytes!("../../../assets/bezels/tv.png"), screen: [420.0 / 1920.0, 0.0, 1080.0 / 1920.0, 1.0] },
-    brand::Bezel { key: "console", label: "Console", png: include_bytes!("../../../assets/bezels/console.png"), screen: [520.0 / 1920.0, 100.0 / 1080.0, 880.0 / 1920.0, 880.0 / 1080.0] },
 ];
 
 /// App identity and translations; must come before loading the configuration
@@ -59,6 +58,7 @@ fn setup() {
 
 fn main() {
     setup();
+    emu_frontend::crashlog::install();
     let mut cfg = config::Config::load();
     i18n::set_lang(&cfg.prefs.language);
     let mut rom: Option<PathBuf> = None;
@@ -105,7 +105,7 @@ fn main() {
     // default: library window (5 × 3 covers); with --scale N, the game size at Nx
     let explicit = scale.is_some();
     let scale = scale.unwrap_or(cfg.prefs.scale).clamp(1, 6);
-    let size = if explicit { [(W as u32 * scale) as f32, (H as u32 * scale) as f32 + 28.0] } else { app::library_window_size() };
+    let size = if explicit { [(W as u32 * scale) as f32, (H as u32 * scale) as f32 + 28.0] } else { app::library_window_size(&pv1000_core::INFO) };
     let mut viewport = egui::ViewportBuilder::default()
         .with_title("Mil Capivaras")
         .with_app_id("mil_capivaras")
@@ -138,7 +138,7 @@ fn identify_folder(dir: Option<PathBuf>) -> i32 {
     }
     for g in games {
         let file = g.file_name().unwrap_or_default().to_string_lossy().into_owned();
-        let id = match rom::read(&g) {
+        let id = match rom::read(&g, pv1000_core::INFO.multi_file_roms) {
             Ok(r) => {
                 let game = games::game_info(&r).map_or_else(|| tr("(not in the game database)"), |g| format!("{} ({})", g.title, g.id));
                 format!("{:08x}  {game}", games::crc32(&r))
@@ -156,7 +156,7 @@ fn print_sheet(path: Option<PathBuf>) -> i32 {
         eprintln!("{}", tr("usage: mil_capivaras --info GAME"));
         return 1;
     };
-    let rom = match rom::read(&path) {
+    let rom = match rom::read(&path, pv1000_core::INFO.multi_file_roms) {
         Ok(r) => r,
         Err(e) => {
             eprintln!("{e}");
@@ -230,7 +230,7 @@ fn list_pads() -> i32 {
 
 /// Headless mode: measures speed and/or saves one frame (PPM).
 fn headless(rom: &std::path::Path, bench: u32, shot: Option<(u32, PathBuf)>, press_start: bool, dump: Option<PathBuf>, hardware: bool) -> i32 {
-    let data = match rom::read(rom) {
+    let data = match rom::read(rom, pv1000_core::INFO.multi_file_roms) {
         Ok(d) => d,
         Err(e) => {
             eprintln!("{e}");

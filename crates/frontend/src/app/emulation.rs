@@ -44,8 +44,14 @@ impl App {
         }
         if !self.loaded || self.paused || self.focus_paused || self.menu_open || self.dialog != Dialog::None || self.nav.quick.is_some() {
             self.next_frame = now;
+            self.session_tick = now;
             return;
         }
+        // play time: only while the game runs (a long gap, e.g. the window hidden, counts little)
+        if let Some(s) = &mut self.session {
+            s.2 += (now - self.session_tick).clamp(0.0, 0.25);
+        }
+        self.session_tick = now;
         let devs = self.pads.snapshot();
         let hold = |f: Func| focused && (self.kb_level(f) || self.pad_level(&devs, f));
         let (ff_held, rw_held) = (hold(Func::FastForward), hold(Func::Rewind));

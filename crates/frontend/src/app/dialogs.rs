@@ -108,27 +108,42 @@ impl App {
                 let file = game.file_name().map(|f| f.to_string_lossy().into_owned());
                 // the folder only: the file name is on the line above
                 let full = game.parent().map(|d| d.display().to_string());
+                // play time and last session, only once the game has been played
+                let key = game.to_string_lossy();
+                // "40min  ·  21/10/2026 17:05 (1 h ago)": total time, then the last session
+                let played = self.usage.last_played(&key).map(|ts| {
+                    let total = crate::usage::play_time(self.usage.played(&key));
+                    let when = format!("{} {} ({})", crate::usage::date(ts), crate::usage::time(ts), crate::usage::relative(ts));
+                    if total.is_empty() { when } else { format!("{total}  ·  {when}") }
+                });
                 let sheet = sheet.clone();
-                let r = l.dialog(ctx, "info", Vec2::new(820.0, 460.0), &sheet.title, sheet.alt_title.as_deref().unwrap_or(""), |ui| {
-                    egui::ScrollArea::vertical().max_height(ui.available_height() - 56.0).show(ui, |ui| {
+                // tall enough for the cover (a bit larger than in the library) plus title and footer
+                let info_h = (COVER_H * 1.25 + 250.0).max(460.0);
+                let r = l.dialog(ctx, "info", Vec2::new(820.0, info_h), &sheet.title, sheet.alt_title.as_deref().unwrap_or(""), |ui| {
+                    let body_h = ui.available_height() - 56.0;
+                    egui::ScrollArea::vertical().max_height(body_h).show(ui, |ui| {
                         ui.horizontal_top(|ui| {
                             if let Some(t) = &cover {
+                                // never taller than the room there is: the cover never makes it scroll
                                 let sz = t.size_vec2();
-                                ui.image((t.id(), sz * (COVER_W * 1.25 / sz.x).min(COVER_H * 1.25 / sz.y))); // a bit larger than in the library
+                                let h = (COVER_H * 1.25).min(body_h - 4.0);
+                                ui.image((t.id(), sz * (cover_w(self.sys) * 1.25 / sz.x).min(h / sz.y)));
                                 ui.add_space(16.0);
                             }
                             // values column: what's left next to the cover, minus the labels column
                             let text_w = (ui.available_width() - 130.0).max(160.0);
                             egui::Grid::new("info_data").num_columns(2).spacing([20.0, 8.0]).show(ui, |ui| {
                                 let fields = [
+                                    ("Genre", &sheet.genre),
                                     ("Year", &sheet.year),
-                                    ("Publisher", &sheet.publisher),
                                     ("Developer", &sheet.developer),
+                                    ("Publisher", &sheet.publisher),
                                     ("Cartridge", &sheet.serial),
                                     ("File", &file),
                                     ("Path", &full),
                                     ("Description", &sheet.description),
                                     ("Players", &sheet.players),
+                                    ("Played", &played),
                                 ];
                                 for (k, v) in fields {
                                     if let Some(v) = v {
@@ -149,6 +164,93 @@ impl App {
                     });
                     let mut c = false;
                     l.footer(ui, |_| {}, |ui| c = l.primary(ui, &tr("Close")).clicked());
+                    c
+                });
+                r.inner || r.should_close()
+            }
+            Dialog::MissingBios(msg, game) => {
+                let (msg, game) = (msg.clone(), game.clone());
+                let mut pick = false;
+                let r = l.dialog(ctx, "bios", Vec2::new(540.0, 260.0), &tr("Could not open"), "", |ui| {
+                    ui.add(egui::Label::new(msg).wrap());
+                    let mut c = false;
+                    l.footer(ui, |ui| c = ui.button(tr("Close")).clicked(), |ui| pick = l.primary(ui, &tr("Choose BIOS folder…")).clicked());
+                    c
+                });
+                if pick {
+                    self.dialog = Dialog::None;
+                    self.choose_bios_folder(game.as_deref());
+                    return;
+                }
+                r.inner || r.should_close()
+            }
+            Dialog::History(game) => {
+                use crate::usage::{date, play_time, time};
+                let key = game.as_ref().map(|g| g.to_string_lossy().into_owned());
+                // a game's name as the library shows it (title from the database, else the file name)
+                let name_of = |p: &str| {
+                    let path = PathBuf::from(p);
+                    self.ids.get(&path).and_then(|i| i.title.clone()).unwrap_or_else(|| stem(&path))
+                };
+                let dur = |s: f64| {
+                    let t = play_time(s);
+                    if t.is_empty() { tr("<1 min") } else { t }
+                };
+                let sessions = self.usage.sessions(key.as_deref());
+                let total: f64 = sessions.iter().map(|s| s.duration).sum();
+                let title = key.as_deref().map_or_else(|| tr("Play history"), name_of);
+                let sub = if sessions.is_empty() { String::new() } else { trf("{n} sessions  •  {t} in total", &[("n", &sessions.len()), ("t", &dur(total))]) };
+                let rows: Vec<[String; 4]> = sessions.iter().map(|s| [date(s.start), time(s.start), name_of(&s.path), dur(s.duration)]).collect();
+                let all = key.is_none();
+                let r = l.dialog(ctx, "history", Vec2::new(if all { 720.0 } else { 520.0 }, 480.0), &title, &sub, |ui| {
+                    if rows.is_empty() {
+                        l.hint(ui, &tr("No sessions recorded yet."));
+                    } else {
+                        egui::ScrollArea::vertical().max_height(ui.available_height() - 56.0).show(ui, |ui| {
+                            egui::Grid::new("history").num_columns(if all { 4 } else { 3 }).spacing([28.0, 10.0]).show(ui, |ui| {
+                                ui.label(l.column(&tr("Date")));
+                                ui.label(l.column(&tr("Time")));
+                                if all {
+                                    ui.label(l.column(&tr("Game")));
+                                }
+                                ui.label(l.column(&tr("Duration")));
+                                ui.end_row();
+                                for [d, h, game, len] in &rows {
+                                    ui.label(d);
+                                    ui.label(l.hint_rt(h));
+                                    if all {
+                                        ui.label(game);
+                                    }
+                                    ui.label(len);
+                                    ui.end_row();
+                                }
+                            });
+                        });
+                    }
+                    let mut c = false;
+                    l.footer(ui, |_| {}, |ui| c = l.primary(ui, &tr("Close")).clicked());
+                    c
+                });
+                r.inner || r.should_close()
+            }
+            Dialog::Crash(report) => {
+                let report = report.clone();
+                let r = l.dialog(ctx, "crash", Vec2::new(520.0, 240.0), &tr("Error report"), "", |ui| {
+                    ui.add(egui::Label::new(tr("The program closed because of an error last time. A report was saved; please attach it when reporting the problem.")).wrap());
+                    ui.add_space(6.0);
+                    ui.add(egui::Label::new(egui::RichText::new(report.display().to_string()).monospace()).wrap());
+                    let mut c = false;
+                    l.footer(
+                        ui,
+                        |ui| {
+                            if ui.button(tr("Open folder")).clicked()
+                                && let Some(d) = report.parent()
+                            {
+                                crate::platform::open_folder(d);
+                            }
+                        },
+                        |ui| c = l.primary(ui, &tr("Close")).clicked(),
+                    );
                     c
                 });
                 r.inner || r.should_close()

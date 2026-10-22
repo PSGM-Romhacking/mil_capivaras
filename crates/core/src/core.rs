@@ -28,6 +28,8 @@ pub static INFO: SystemInfo = SystemInfo {
     short_name: "PV-1000",
     extensions: &["pv1", "bin", "rom"],
     thumbnails: "Casio - PV-1000",
+    // the box is portrait: 140 × 213
+    cover_aspect: 0.66,
     players: 2,
     buttons: &[
         Button { id: PadButton::Up, label: "Up" },
@@ -49,6 +51,9 @@ pub static INFO: SystemInfo = SystemInfo {
     game_info: crate::games::game_info,
     game_texts: crate::games::TEXTS,
     create: |rate| Box::new(Pv1000Core::new(rate)),
+    // no BIOS: the Z80 starts the cartridge at address 0
+    bios: &[],
+    multi_file_roms: false,
 };
 
 pub struct Pv1000Core {

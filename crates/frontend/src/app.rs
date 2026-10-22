@@ -29,28 +29,37 @@ use emu_api::{Core, SystemInfo};
 use crate::theme;
 use crate::widgets::Look;
 
-/// Library: just the box cover, in its own shape (PV-1000 ones are portrait,
-/// height ≈ 1.52 × width). They also define the initial window size.
-const COVER_W: f32 = 140.0;
-const COVER_H: f32 = 213.0;
-const CARD_W: f32 = COVER_W + 12.0;
+/// Library: just the box cover, in its own shape (`SystemInfo::cover_aspect`). The height
+/// is fixed; the width follows the shape. They also define the initial window size.
+/// Size of the library's images (covers, title and in-game screens) over the original
+/// layout: 20% larger.
+const LIB_SCALE: f32 = 1.2;
+const COVER_H: f32 = 213.0 * LIB_SCALE;
 const CARD_H: f32 = COVER_H + 6.0 + 34.0; // cover + name
+
+/// Width of a cover in the library for this system's box shape.
+fn cover_w(sys: &SystemInfo) -> f32 {
+    (COVER_H * sys.cover_aspect).clamp(100.0 * LIB_SCALE, 280.0 * LIB_SCALE)
+}
 const CARD_GAP: f32 = 12.0;
 const LIB_COLS: f32 = 7.0;
 const LIB_ROWS: f32 = 2.0;
 /// Title and in-game screen are landscape (256 × 192, 4:3): 6 × 3 in the same window,
 /// taking the same width as the cover grid.
-const SHOT_W: f32 = 168.0;
-const SHOT_H: f32 = 126.0;
+const SHOT_W: f32 = 168.0 * LIB_SCALE;
+const SHOT_H: f32 = 126.0 * LIB_SCALE;
 
 /// Initial window size: the library with 7 × 2 covers (14), plus header,
 /// margins and the menu bar.
-pub fn library_window_size() -> [f32; 2] {
-    let w = 24.0 * 2.0 + LIB_COLS * CARD_W + (LIB_COLS - 1.0) * CARD_GAP + 14.0; // margins + slack
+pub fn library_window_size(sys: &SystemInfo) -> [f32; 2] {
+    let card_w = cover_w(sys) + 12.0;
+    let w = 24.0 * 2.0 + LIB_COLS * card_w + (LIB_COLS - 1.0) * CARD_GAP + 14.0; // margins + slack
     let h = 28.0 + 16.0 + LIB_HEADER + LIB_ROWS * CARD_H + (LIB_ROWS - 1.0) * CARD_GAP + 8.0 + 10.0; // bar + header + grid
     [w, h]
 }
 const LIB_HEADER: f32 = 60.0;
+/// Height left for the title bar and the taskbar when fitting the window to the screen.
+const SCREEN_MARGIN_H: f32 = 90.0;
 
 /// Rewind: keeps a state every 2 frames, up to ~30 s (~30 MB).
 const REWIND_EVERY: u64 = 2;
@@ -105,6 +114,8 @@ enum Col {
 #[derive(PartialEq)]
 enum Dialog {
     None,
+    /// The previous run closed with an error; the report's path.
+    Crash(PathBuf),
     Controls,
     /// Configure controls: selected controller and action/column waiting for a press.
     Gamepad { dev: usize, capture: Option<(Func, Col)> },
@@ -113,7 +124,11 @@ enum Dialog {
     Folders { move_files: bool },
     /// Game info sheet and the cached cover, if any.
     Info(Box<crate::sheets::Sheet>, Option<PathBuf>, PathBuf),
+    /// Play history: one game's sessions, or every game's (`None`).
+    History(Option<PathBuf>),
     Error(String),
+    /// System files missing (message, game to retry): offers to choose the BIOS folder.
+    MissingBios(String, Option<PathBuf>),
 }
 
 /// Identification of a game file, cached by modification time.
@@ -124,6 +139,39 @@ struct Ident {
     title: Option<String>,
     /// Cover name in libretro-thumbnails, from the info sheet.
     thumbnail: Option<String>,
+    /// The whole info sheet (genre, year…), for the list view; in the language of the
+    /// moment it was read (the cache is emptied when the language changes).
+    sheet: Option<crate::sheets::Sheet>,
+}
+
+/// A column of the library's list view (Box art / Title screen / Gameplay / List).
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+enum ListCol {
+    Title,
+    Genre,
+    Year,
+    Developer,
+    Publisher,
+    Players,
+    PlayTime,
+    LastPlayed,
+}
+
+impl ListCol {
+    const ALL: [ListCol; 8] = [ListCol::Title, ListCol::Genre, ListCol::Year, ListCol::Developer, ListCol::Publisher, ListCol::Players, ListCol::PlayTime, ListCol::LastPlayed];
+
+    fn label(self) -> &'static str {
+        match self {
+            ListCol::Title => "Title",
+            ListCol::Genre => "Genre",
+            ListCol::Year => "Year",
+            ListCol::Developer => "Developer",
+            ListCol::Publisher => "Publisher",
+            ListCol::Players => "Players",
+            ListCol::PlayTime => "Play time",
+            ListCol::LastPlayed => "Last played",
+        }
+    }
 }
 
 pub struct App {
@@ -164,6 +212,8 @@ pub struct App {
     bar_visible: bool,
     /// frames until releasing the min/max used to force the size
     size_lock: u32,
+    /// The window was checked against the screen size (once, when the monitor is known).
+    screen_fitted: bool,
     menu_open: bool,
     dialog: Dialog,
 
@@ -204,6 +254,10 @@ pub struct App {
     /// Library search (the library is what the window shows when no game is loaded).
     library_filter: String,
     library_art: crate::covers::Art,
+    /// The library shows a list (a table of the games) instead of images.
+    library_list: bool,
+    /// List view: the column it is sorted by, and whether ascending.
+    list_sort: (ListCol, bool),
     /// Old duck icon for "About" (loaded the first time).
     about_icon: Option<egui::TextureHandle>,
     /// Title and cover name of each file, identified by CRC32 (cached by modification time).
@@ -229,6 +283,18 @@ pub struct App {
     next_frame: f64,
     /// Screenshot tour for the documentation (`EMU_DOCSHOTS`), if active.
     docshots: Option<docshots::DocShots>,
+    /// Battery save as last read or written (`.sav`), and when it was last checked.
+    battery_saved: Vec<u8>,
+    battery_t: f64,
+    /// Play time and history of every game (`usage.json`).
+    usage: crate::usage::Usage,
+    /// The game being played: (path, start, seconds actually played so far).
+    session: Option<(String, f64, f64)>,
+    /// Last moment the emulation ran, to add the time between frames to the session.
+    session_tick: f64,
+    /// Which system files (`SystemInfo::bios`) are in the BIOS folder or the ROM folder
+    /// (BIOS menu, library banner); None = not checked since the folders last changed.
+    bios_found: Option<Vec<bool>>,
     /// Controller navigation (library, quick menu) and couch mode (see nav.rs).
     nav: nav::Nav,
     couch: bool,
@@ -276,6 +342,7 @@ impl App {
             bar_h: 0.0,
             bar_visible: true,
             size_lock: 0,
+            screen_fitted: false,
             menu_open: false,
             dialog: Dialog::None,
             rom_dir: std::env::current_dir().unwrap_or_default(),
@@ -304,6 +371,8 @@ impl App {
             sheets: crate::sheets::Sheets::load(sys),
             about_icon: None,
             library_art: crate::covers::Art::from_key(&pr.library_art),
+            library_list: pr.library_art == "list",
+            list_sort: (ListCol::Title, true),
             nav: Default::default(),
             couch: pr.couch,
             menu_combo: pr.menu_combo,
@@ -323,6 +392,12 @@ impl App {
             clock: Instant::now(),
             next_frame: 0.0,
             docshots: docshots::DocShots::from_env(),
+            battery_saved: Vec::new(),
+            battery_t: 0.0,
+            usage: crate::usage::Usage::load(),
+            session: None,
+            session_tick: 0.0,
+            bios_found: None,
         };
         app.keymap = keys::from_cfg(&app.cfg.keys, sys);
         for (k, v) in &app.cfg.core_options {
@@ -351,12 +426,28 @@ impl App {
         if !warn.is_empty() {
             app.toast = Some((warn.join("\n"), 6.0));
         }
+        if let Some(report) = crate::crashlog::take_pending()
+            && matches!(app.dialog, Dialog::None)
+        {
+            app.dialog = Dialog::Crash(report);
+        }
         app
     }
 
     fn load_game(&mut self, p: &Path) {
-        match crate::rom::read(p) {
+        self.flush_battery();
+        self.end_session();
+        match crate::rom::read(p, self.sys.multi_file_roms) {
             Ok(rom) => {
+                if !self.sys.bios.is_empty() {
+                    match self.find_bios(p) {
+                        Ok(files) => self.core.set_bios(&files),
+                        Err(e) => {
+                            self.dialog = Dialog::MissingBios(e, Some(p.to_path_buf()));
+                            return;
+                        }
+                    }
+                }
                 if let Err(e) = self.core.load(&rom) {
                     self.dialog = Dialog::Error(e);
                     return;
@@ -367,6 +458,9 @@ impl App {
                 self.cheevos.game_loaded(&rom);
                 self.audio.clear();
                 self.cur_game = Some(p.to_path_buf());
+                crate::crashlog::set_game(Some(p));
+                self.session = Some((p.to_string_lossy().into_owned(), crate::usage::now(), 0.0));
+                self.load_battery();
                 self.cheats.load(self.cheats_path(p));
                 let id = self.identify(p, &rom);
                 self.ids.insert(p.to_path_buf(), id);
@@ -389,6 +483,7 @@ impl App {
 
     /// Changes the ROM folder, refreshes the list and saves it to the config.
     fn set_rom_dir(&mut self, d: PathBuf) {
+        self.bios_found = None;
         self.games = crate::rom::list(&d, self.sys.extensions);
         if self.cfg.rom_dir.as_ref() != Some(&d) {
             self.cfg.rom_dir = Some(d.clone());
@@ -399,6 +494,7 @@ impl App {
 
     /// Reads the ROM folder again: files added, removed or renamed while the app is open.
     fn refresh_games(&mut self) {
+        self.bios_found = None;
         self.games = crate::rom::list(&self.rom_dir, self.sys.extensions);
         self.notify(trf("Game list updated: {n} games", &[("n", &self.games.len())]));
     }
@@ -435,6 +531,7 @@ impl App {
 
     fn set_language(&mut self, code: &str) {
         crate::i18n::set_lang(code);
+        self.ids.clear(); // the game sheets (genre, players…) are read again in the new language
         self.cfg.prefs.language = crate::i18n::lang().into();
         self.cfg.save();
     }
@@ -502,7 +599,7 @@ impl App {
             language: crate::i18n::lang().into(),
             pause_unfocused: self.pause_unfocused,
             show_fps: self.show_fps,
-            library_art: self.library_art.key().into(),
+            library_art: if self.library_list { "list".into() } else { self.library_art.key().into() },
             frame: self.frame.clone(),
             couch: self.couch,
             menu_combo: self.menu_combo,
@@ -522,6 +619,8 @@ impl App {
         if !self.loaded {
             return;
         }
+        self.flush_battery();
+        self.end_session();
         if let Some(mut r) = self.recorder.take() {
             r.stop();
             self.finishing.push(r);
@@ -530,12 +629,133 @@ impl App {
         self.history.clear();
         self.audio.clear();
         self.cur_game = None;
+        crate::crashlog::set_game(None);
         self.cheats.load(None);
         self.loaded = false;
         self.paused = false;
         self.ff_toggle = false;
         self.tex = None;
         self.notify(tr("Game closed"));
+    }
+
+    /// The system files, from the BIOS folder or (small files only) the game's folder;
+    /// Err with the list of required ones missing.
+    fn find_bios(&self, game: &Path) -> Result<Vec<Option<Vec<u8>>>, String> {
+        let bios_dir = Folder::Bios.dir();
+        let mut dirs: Vec<(PathBuf, u64)> = bios_dir.iter().map(|d| (d.clone(), u64::MAX)).collect();
+        if let Some(d) = game.parent() {
+            dirs.push((d.to_path_buf(), 1 << 20));
+        }
+        let files = crate::rom::find_bios(self.sys.bios, &dirs);
+        let missing: Vec<String> = self.sys.bios.iter().zip(&files).filter(|(b, f)| b.required && f.is_none()).map(|(b, _)| format!("{} (CRC32 {:08x})", b.name, b.crc32)).collect();
+        if missing.is_empty() {
+            return Ok(files);
+        }
+        let folder = bios_dir.map_or_else(|| "?".to_string(), |d| d.display().to_string());
+        Err(trf("Missing system files (BIOS): {files}. Put them in {folder} or next to the game (loose or in a .zip).", &[("folder", &folder), ("files", &missing.join(", "))]))
+    }
+
+    /// Asks for the BIOS folder (the same setting as Emulation › Folders) and, if a game
+    /// was waiting for it, tries the game again.
+    fn choose_bios_folder(&mut self, game: Option<&Path>) {
+        let mut d = rfd::FileDialog::new().set_title(tr("Choose BIOS folder…"));
+        if let Some(cur) = Folder::Bios.dir().filter(|d| d.is_dir()) {
+            d = d.set_directory(cur);
+        }
+        if let Some(dir) = d.pick_folder() {
+            self.cfg.dirs.insert(Folder::Bios.key().to_string(), dir);
+            self.cfg.apply_dirs();
+            self.cfg.save();
+            self.bios_found = None;
+            match game {
+                Some(g) => self.load_game(g),
+                None => {
+                    let msg = if self.missing_bios().is_empty() { tr("BIOS found") } else { tr("BIOS still incomplete") };
+                    self.notify(msg);
+                }
+            }
+        }
+    }
+
+    /// Which system files are in the BIOS folder or the ROM folder (cached), in
+    /// `SystemInfo::bios` order.
+    fn bios_found(&mut self) -> Vec<bool> {
+        if self.bios_found.is_none() {
+            let mut dirs: Vec<(PathBuf, u64)> = Folder::Bios.dir().into_iter().map(|d| (d, u64::MAX)).collect();
+            dirs.push((self.rom_dir.clone(), 1 << 20));
+            let files = crate::rom::find_bios(self.sys.bios, &dirs);
+            self.bios_found = Some(files.iter().map(Option::is_some).collect());
+        }
+        self.bios_found.clone().unwrap_or_default()
+    }
+
+    /// Required system files missing from the BIOS folder and the ROM folder.
+    fn missing_bios(&mut self) -> Vec<&'static str> {
+        let found = self.bios_found();
+        self.sys.bios.iter().zip(found).filter(|(b, f)| b.required && !f).map(|(b, _)| b.name).collect()
+    }
+
+    /// The system files as text (BIOS › Copy list): name, size, CRC32, status.
+    fn bios_report(&mut self) -> String {
+        let found = self.bios_found();
+        let folder = Folder::Bios.dir().map_or_else(|| "?".to_string(), |d| d.display().to_string());
+        let mut out = trf("{system} BIOS — folder: {folder}", &[("system", &self.sys.short_name), ("folder", &folder)]) + "\n";
+        // columns padded with spaces: aligned wherever the text is shown in a monospace font
+        let name_w = self.sys.bios.iter().map(|b| b.name.chars().count()).max().unwrap_or(0);
+        let size_w = self.sys.bios.iter().map(|b| size_text(b.size).chars().count()).max().unwrap_or(0);
+        for (b, ok) in self.sys.bios.iter().zip(found) {
+            let status = if ok { tr("found") } else if b.required { tr("missing") } else { tr("missing (optional)") };
+            out += &format!("{:name_w$}  {:>size_w$}  CRC32 {:08x}  {}\n", b.name, size_text(b.size), b.crc32, status);
+        }
+        out
+    }
+
+    /// Closes the play session of the current game into the history (play time, last
+    /// played); sessions under `usage::MIN_SESSION` are left out.
+    fn end_session(&mut self) {
+        if let Some((path, start, played)) = self.session.take() {
+            self.usage.add(&path, start, played);
+        }
+    }
+
+    /// `<saves folder>/<game>.sav`.
+    fn battery_path(&self) -> Option<PathBuf> {
+        let stem = self.cur_game.as_ref()?.file_stem()?.to_string_lossy().into_owned();
+        Some(Folder::Saves.dir()?.join(format!("{stem}.sav")))
+    }
+
+    /// Puts the game's .sav back into the core (if the core has battery RAM).
+    fn load_battery(&mut self) {
+        self.battery_saved.clear();
+        if self.core.battery_ram().is_none() {
+            return;
+        }
+        if let Some(data) = self.battery_path().and_then(|p| std::fs::read(p).ok()) {
+            self.core.load_battery(&data);
+        }
+        self.battery_saved = self.core.battery_ram().unwrap_or_default().to_vec();
+    }
+
+    /// Writes the .sav if the game changed its battery RAM since the last write.
+    fn flush_battery(&mut self) {
+        if !self.loaded {
+            return;
+        }
+        let Some(ram) = self.core.battery_ram() else { return };
+        if ram == self.battery_saved.as_slice() {
+            return;
+        }
+        let ram = ram.to_vec();
+        let Some(p) = self.battery_path() else { return };
+        let res = std::fs::create_dir_all(p.parent().unwrap()).and_then(|_| {
+            let tmp = p.with_extension("tmp");
+            std::fs::write(&tmp, &ram)?;
+            std::fs::rename(&tmp, &p)
+        });
+        match res {
+            Ok(()) => self.battery_saved = ram,
+            Err(e) => self.notify(trf("Save error: {error}", &[("error", &e)])),
+        }
     }
 
     fn reset_game(&mut self) {
@@ -571,7 +791,33 @@ impl App {
         self.size_pending = true;
     }
 
+    /// Usable screen area in points (monitor minus room for the title bar and taskbar), once known.
+    fn screen_room(ctx: &egui::Context) -> Option<Vec2> {
+        let m = ctx.input(|i| i.viewport().monitor_size)?;
+        (m.x > 0.0 && m.y > 0.0).then(|| Vec2::new(m.x - 16.0, m.y - SCREEN_MARGIN_H))
+    }
+
+    /// On a small screen (1366×768) the starting size may not fit: shrink the window once.
+    fn fit_screen(&mut self, ctx: &egui::Context) {
+        if self.screen_fitted {
+            return;
+        }
+        let Some(room) = Self::screen_room(ctx) else { return };
+        // on Wayland `inner_rect` never comes (winit can't know the window's position)
+        let inner = ctx.input(|i| i.viewport_rect());
+        if inner.width() <= 0.0 {
+            return;
+        }
+        self.screen_fitted = true;
+        let (max, full) = ctx.input(|i| (i.viewport().maximized.unwrap_or(false), i.viewport().fullscreen.unwrap_or(false)));
+        if max || full || (inner.width() <= room.x && inner.height() <= room.y) {
+            return;
+        }
+        ctx.send_viewport_cmd(ViewportCommand::InnerSize(inner.size().min(room)));
+    }
+
     fn apply_pending_size(&mut self, ctx: &egui::Context) {
+        self.fit_screen(ctx);
         // release the size locks a few frames after they were applied
         if self.size_lock > 0 {
             self.size_lock -= 1;
@@ -589,7 +835,10 @@ impl App {
         }
         let ppp = ctx.pixels_per_point();
         let game = self.display_size() * self.scale as f32 / ppp; // N physical pixels per game pixel
-        let size = Vec2::new(game.x, game.y + self.bar_h);
+        let mut size = Vec2::new(game.x, game.y + self.bar_h);
+        if let Some(room) = Self::screen_room(ctx) {
+            size = size.min(room); // a large scale on a small screen
+        }
         // On Wayland winit ignores InnerSize when KWin marks the window as
         // "tiled"; locking min = max = desired size forces the
         // compositor to resize. The locks are removed after `size_lock` frames.
@@ -651,6 +900,11 @@ impl eframe::App for App {
         }
     }
 
+    fn on_exit(&mut self, _gl: Option<&eframe::glow::Context>) {
+        self.flush_battery();
+        self.end_session();
+    }
+
     fn ui(&mut self, ui: &mut egui::Ui, _frame: &mut eframe::Frame) {
         let ctx = ui.ctx().clone();
         self.shortcuts(&ctx);
@@ -672,6 +926,12 @@ impl eframe::App for App {
         }
         self.apply_pending_size(&ctx);
         self.emulate(&ctx);
+        // battery save: written within ~5 s of a change (and when the game closes)
+        let now = self.now();
+        if now - self.battery_t >= 5.0 {
+            self.battery_t = now;
+            self.flush_battery();
+        }
         if !self.loaded {
             self.library_view(ui); // without a game, the window is the library
         } else {
@@ -715,6 +975,15 @@ impl eframe::App for App {
 fn local_stamp() -> String {
     let t = crate::platform::local_time(std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).map(|d| d.as_secs()).unwrap_or(0));
     format!("{:04}-{:02}-{:02} {:02}-{:02}-{:02}", t.year, t.month, t.day, t.hour, t.minute, t.second)
+}
+
+/// "4 KiB", "16 bytes"; empty when not known.
+fn size_text(n: u32) -> String {
+    match n {
+        0 => String::new(),
+        n if n >= 1024 && n % 1024 == 0 => format!("{} KiB", n / 1024),
+        n => trf("{n} bytes", &[("n", &n)]),
+    }
 }
 
 /// Opens the folder in the file manager (creates it if it doesn't exist yet).

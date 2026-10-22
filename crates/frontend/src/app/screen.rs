@@ -23,11 +23,12 @@ impl App {
         if let Some(game) = self.cur_game.clone()
             && self.cover_bg.as_ref().map(|(g, _)| g) != Some(&game)
         {
-            let thumb = self.ids.get(&game).and_then(|i| i.thumbnail.clone());
-            let tex = thumb.and_then(|n| match self.covers.get(crate::covers::Art::Boxart, &n, false) {
+            // the same image as the library card (the user's own cover included)
+            let (name, thumb) = self.game_name(&game);
+            let tex = match self.game_art(crate::covers::Art::Boxart, &game, &name, thumb.as_deref(), false) {
                 crate::covers::Status::Ready(p) => blurred_cover(ctx, &p),
                 _ => None,
-            });
+            };
             self.cover_bg = Some((game, tex));
         }
         (None, self.cover_bg.as_ref().and_then(|(_, t)| t.clone()))
