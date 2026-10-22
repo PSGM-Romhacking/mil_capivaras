@@ -4,6 +4,33 @@ All notable changes to Mil Capivaras. The release workflow publishes the section
 version as its release notes. Details in the README (in [English](README.md),
 [Português](README.pt-BR.md) and [Español](README.es.md)).
 
+## [0.9.1] - 2026-10-22
+
+**Library**
+- A fourth view, **List**: a table with title, year, developer, publisher, players, play time
+  and last played; click a header to sort.
+- **Play time and history**: every session is recorded and shown in the list, on the game's
+  info sheet, in the game's **History…** and in **File › Play history…**.
+- The covers are 20% larger and spread over the whole width of the window, with no empty
+  strip on the right.
+- Your own box art is also used on the info sheet and in the "Game cover" frame.
+
+**Interface**
+- **Error report**: if the program crashes, it writes a report in the `crashes/` folder of its
+  settings folder, and the next start shows where it is, to attach to a bug report.
+- The window never opens bigger than the screen.
+- Copying text works (it did nothing).
+- "Open last game on startup" is off by default.
+- Quick menu: narrower, and its button hints in two lines (they wrapped in the middle).
+- Removed the **Console** frame: the drawing did not look like the real PV-1000. The TV and
+  game cover frames remain.
+
+**Documentation and validation**
+- The README is short; the rest is in `docs/` (manual, hardware, compatibility, accuracy,
+  architecture, libretro core, lessons, references), in English, Portuguese and Spanish.
+- `reference/`: the MiSTer core simulated with Verilator and `compare.sh`, to repeat the
+  validation with your own ROMs.
+
 ## [0.9.0] - 2026-10-18
 
 First release. A Casio PV-1000 (1983) emulator in Rust, reimplemented from the MiSTer core.

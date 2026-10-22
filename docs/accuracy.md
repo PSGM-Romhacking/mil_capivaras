@@ -12,7 +12,7 @@ The references in brackets ([N2], [M1]…) are in [References](references.md).
 - **The reference:** the MiSTer core is the description of the PV-1000 circuit (in
   Verilog). A program (Verilator) simulates that circuit on the PC, wire by wire, clock by
   clock. It is slow, but it is the MiSTer hardware itself running.
-- **Mil Capivaras:** the emulator, written from scratch in Rust, fast.
+- **Mil Capivaras:** the emulator, written in Rust, ported from the MiSTer core's Verilog (the Z80 comes from the `iz80` crate), fast.
 
 If Mil Capivaras is right, the two have to do **exactly the same thing**.
 

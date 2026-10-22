@@ -40,14 +40,14 @@ The binaries are in the [releases](https://github.com/PSGM-Romhacking/mil_capiva
 
 | File | System |
 |---|---|
-| `mil-capivaras-0.9.0-linux-x86_64.AppImage` | Linux x86-64 (glibc 2.27 or newer: Debian, Fedora, Arch, openSUSE and derivatives) |
-| `mil-capivaras-0.9.0-windows-x86_64.exe` | Windows 10 and 11, 64-bit |
-| `mil-capivaras-0.9.0-freebsd-x86_64.tar.gz` | FreeBSD 14 or newer, amd64 (needs a few packages, see the [manual](docs/manual.md#freebsd)) |
-| `mil-capivaras-0.9.0-linux-x86_64.AppImage.zsync` | the AppImage's update map (used by Gear Lever and AppImageUpdate; no need to download it) |
-| `mil_capivaras_libretro-0.9.0-linux-x86_64.zip` / `-windows-x86_64.zip` / `-freebsd-x86_64.zip` | the libretro core (`.so` / `.dll`) and its `.info`, for RetroArch's cores folder |
+| `mil-capivaras-0.9.1-linux-x86_64.AppImage` | Linux x86-64 (glibc 2.27 or newer: Debian, Fedora, Arch, openSUSE and derivatives) |
+| `mil-capivaras-0.9.1-windows-x86_64.exe` | Windows 10 and 11, 64-bit |
+| `mil-capivaras-0.9.1-freebsd-x86_64.tar.gz` | FreeBSD 14 or newer, amd64 (needs a few packages, see the [manual](docs/manual.md#freebsd)) |
+| `mil-capivaras-0.9.1-linux-x86_64.AppImage.zsync` | the AppImage's update map (used by Gear Lever and AppImageUpdate; no need to download it) |
+| `mil_capivaras_libretro-0.9.1-linux-x86_64.zip` / `-windows-x86_64.zip` / `-freebsd-x86_64.zip` | the libretro core (`.so` / `.dll`) and its `.info`, for RetroArch's cores folder |
 | `SHA256SUMS` | SHA-256 checksums of every file, to check the download (`sha256sum -c SHA256SUMS`) |
 
-On Linux: `chmod +x mil-capivaras-0.9.0-linux-x86_64.AppImage` and run it. Nothing needs
+On Linux: `chmod +x mil-capivaras-0.9.1-linux-x86_64.AppImage` and run it. Nothing needs
 to be installed. Releases are built by GitHub Actions on each version tag
 (`.github/workflows/release.yml`), and each version's notes come from
 [`CHANGELOG.md`](CHANGELOG.md).
@@ -82,7 +82,7 @@ as in RetroArch), not from fixed numbers.
 ## Build
 
 ```bash
-make                    # cargo build --release + copies to ./mil-capivaras-0.9.0-linux-x86_64
+make                    # cargo build --release + copies to ./mil-capivaras-0.9.1-linux-x86_64
 make install            # "Mil Capivaras" entry in the applications menu + icons
 make install-libretro   # libretro core in RetroArch's cores folder
 packaging/build_linux.sh      # dist/…AppImage and the core .so (needs cargo-zigbuild and zig)

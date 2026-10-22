@@ -194,7 +194,7 @@ already marked in `achievements.rs`, and RA's hardcore compliance rules
 - in hardcore mode, blocking cheats, rewind, slow motion, frame advance, loading save
   states, the debugger and the memory editor; switching from casual to hardcore resets the
   game;
-- its own user agent (`MilCapivaras/0.9.0 (Linux)`);
+- its own user agent (`MilCapivaras/0.9.1 (Linux)`);
 - at least **6 months of public release** before asking for hardcore approval.
 
 **Plan (not done yet): automatic memory notes and draft achievements.** On RA, an

@@ -14,9 +14,6 @@ The references in brackets ([N2], [M1]…) are in [References](references.md).
 ![Game info sheet](../screenshots/game-info.png)
 *Game info sheet*
 
-![Frame: console and controllers](../screenshots/game-console.png)
-*Frame: console and controllers*
-
 ![Frame: TV](../screenshots/game-tv.png)
 *Frame: TV*
 
@@ -84,7 +81,7 @@ font (46 KB, a subset of Noto Sans CJK), so they show up on any distro.
 | Window 1x–6x | N screen pixels per game pixel, exact even on Wayland |
 | Integer scaling | integer multiples only (uniform pixels) or filling the window |
 | Filters | None, Scanlines, CRT |
-| **Frames** | fill the sides in fullscreen: **TV** (the game takes the full height, the TV shows on the sides), **Console** (the PV-1000 and the controllers drawn) and **Game cover** (blurred and darkened) |
+| **Frames** | fill the sides in fullscreen: **TV** (the game takes the full height, the TV shows on the sides) and **Game cover** (blurred and darkened) |
 | Fullscreen | F11; the menu bar disappears and comes back when the mouse touches the top |
 | FPS and speed | optional indicator |
 
@@ -192,7 +189,7 @@ pkg install alsa-lib alsa-plugins libxkbcommon gtk3 zenity
 
 `zenity` (or `xdg-desktop-portal-gtk`) shows the folder and file pickers; without it,
 "Choose the ROM folder…" opens nothing. Then unpack the `.tar.gz` and run
-`./mil-capivaras` inside the `mil-capivaras-0.9.0-freebsd-x86_64/` folder it creates. It is built in a FreeBSD 14.3 VM by the same release workflow and was
+`./mil-capivaras` inside the `mil-capivaras-0.9.1-freebsd-x86_64/` folder it creates. It is built in a FreeBSD 14.3 VM by the same release workflow and was
 tested on FreeBSD 15.1 (XFCE): picture, library, dialogs, folder pickers and a controller
 (Flydigi Vader 3). Sound on FreeBSD has not been tested yet.
 
@@ -219,7 +216,7 @@ by far the most used BSD: about 95% of the websites that run a BSD
 
 ### What it takes to run
 
-Just the file **`mil-capivaras-0.9.0-linux-x86_64`** (name, version, system and architecture). Everything is embedded in it: icon, translations, game database, Japanese font, theme and frames. When run, it creates:
+Just the file **`mil-capivaras-0.9.1-linux-x86_64`** (name, version, system and architecture). Everything is embedded in it: icon, translations, game database, Japanese font, theme and frames. When run, it creates:
 
 | Folder | Contents |
 |---|---|
@@ -245,7 +242,7 @@ goes into a **`mil_capivaras_data/`** folder next to it instead of your user fol
 
 ```
 USB stick/MilCapivaras/
-├── mil-capivaras-0.9.0-linux-x86_64.AppImage
+├── mil-capivaras-0.9.1-linux-x86_64.AppImage
 ├── portable.txt
 ├── roms/
 └── mil_capivaras_data/
@@ -290,16 +287,16 @@ translation to be included in the next version**, is in [`docs/translating.md`](
 ### Command line
 
 ```bash
-./mil-capivaras-0.9.0-linux-x86_64                              # opens the library
-./mil-capivaras-0.9.0-linux-x86_64 "Dig Dug (Japan).7z"         # opens a game (.pv1, .bin, .rom, .zip, .7z)
-./mil-capivaras-0.9.0-linux-x86_64 "/path/Casio - PV-1000/"     # opens the library in that folder
-./mil-capivaras-0.9.0-linux-x86_64 game.bin --scale 4           # 4x window
-./mil-capivaras-0.9.0-linux-x86_64 --couch                      # couch mode (saved)
-./mil-capivaras-0.9.0-linux-x86_64 --identify FOLDER            # CRC32 and MAME game of each ROM
-./mil-capivaras-0.9.0-linux-x86_64 --info GAME                  # game info in the terminal
-./mil-capivaras-0.9.0-linux-x86_64 --controls                   # detected controllers and pressed buttons
-./mil-capivaras-0.9.0-linux-x86_64 --memory-map                 # memory map (RetroAchievements format)
-./mil-capivaras-0.9.0-linux-x86_64 GAME --bench 3000            # speed, no window
-./mil-capivaras-0.9.0-linux-x86_64 GAME --shot 500 q.ppm --press-start --dump-ram ram.bin  # validation
-./mil-capivaras-0.9.0-linux-x86_64 GAME --shot 500 q.ppm --hardware                         # the same, on the real hardware model
+./mil-capivaras-0.9.1-linux-x86_64                              # opens the library
+./mil-capivaras-0.9.1-linux-x86_64 "Dig Dug (Japan).7z"         # opens a game (.pv1, .bin, .rom, .zip, .7z)
+./mil-capivaras-0.9.1-linux-x86_64 "/path/Casio - PV-1000/"     # opens the library in that folder
+./mil-capivaras-0.9.1-linux-x86_64 game.bin --scale 4           # 4x window
+./mil-capivaras-0.9.1-linux-x86_64 --couch                      # couch mode (saved)
+./mil-capivaras-0.9.1-linux-x86_64 --identify FOLDER            # CRC32 and MAME game of each ROM
+./mil-capivaras-0.9.1-linux-x86_64 --info GAME                  # game info in the terminal
+./mil-capivaras-0.9.1-linux-x86_64 --controls                   # detected controllers and pressed buttons
+./mil-capivaras-0.9.1-linux-x86_64 --memory-map                 # memory map (RetroAchievements format)
+./mil-capivaras-0.9.1-linux-x86_64 GAME --bench 3000            # speed, no window
+./mil-capivaras-0.9.1-linux-x86_64 GAME --shot 500 q.ppm --press-start --dump-ram ram.bin  # validation
+./mil-capivaras-0.9.1-linux-x86_64 GAME --shot 500 q.ppm --hardware                         # the same, on the real hardware model
 ```

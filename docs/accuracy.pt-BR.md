@@ -12,7 +12,7 @@ As referências entre colchetes ([N2], [M1]…) estão em [Referências](referen
 - **A referência:** o core do MiSTer é a descrição do circuito do PV-1000 (em Verilog).
   Um programa (Verilator) simula esse circuito no PC, fio por fio, relógio por relógio. É
   lento, mas é o próprio hardware do MiSTer rodando.
-- **O Mil Capivaras:** o emulador, escrito do zero em Rust, rápido.
+- **O Mil Capivaras:** o emulador, escrito em Rust, portado do Verilog do core do MiSTer (o Z80 vem do crate `iz80`), rápido.
 
 Se o Mil Capivaras estiver certo, os dois têm que fazer **exatamente a mesma coisa**.
 

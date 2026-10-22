@@ -193,7 +193,7 @@ marcados en `achievements.rs`, y las reglas de "hardcore compliance" de RA
 - en modo hardcore, bloquear trucos, rebobinado, cámara lenta, avance de cuadro, cargar
   save states, el depurador y el editor de memoria; pasar de casual a hardcore reinicia el
   juego;
-- un user agent propio (`MilCapivaras/0.9.0 (Linux)`);
+- un user agent propio (`MilCapivaras/0.9.1 (Linux)`);
 - al menos **6 meses de lanzamiento público** antes de pedir la aprobación para hardcore.
 
 **Plan (todavía no hecho): notas de memoria y borradores de logros automáticos.** En RA,

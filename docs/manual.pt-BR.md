@@ -14,9 +14,6 @@ As referências entre colchetes ([N2], [M1]…) estão em [Referências](referen
 ![Ficha do jogo](../screenshots/game-info.png)
 *Ficha do jogo*
 
-![Moldura: console e controles](../screenshots/game-console.png)
-*Moldura: console e controles*
-
 ![Moldura: TV](../screenshots/game-tv.png)
 *Moldura: TV*
 
@@ -85,7 +82,7 @@ recorte da Noto Sans CJK), então aparecem em qualquer distro.
 | Janela 1x–6x | N pixels de tela por pixel do jogo, exatos inclusive no Wayland |
 | Escala inteira | só múltiplos inteiros (pixels uniformes) ou ocupando a janela |
 | Filtros | Nenhum, Scanlines, CRT |
-| **Molduras** | preenchem as laterais em tela cheia: **TV** (o jogo ocupa a altura toda, a TV aparece dos lados), **Console** (o PV-1000 e os controles desenhados) e **Capa do jogo** (desfocada e escurecida) |
+| **Molduras** | preenchem as laterais em tela cheia: **TV** (o jogo ocupa a altura toda, a TV aparece dos lados) e **Capa do jogo** (desfocada e escurecida) |
 | Tela cheia | F11; a barra de menus some e volta quando o mouse encosta no topo |
 | FPS e velocidade | indicador opcional |
 
@@ -189,7 +186,7 @@ pkg install alsa-lib alsa-plugins libxkbcommon gtk3 zenity
 
 O `zenity` (ou o `xdg-desktop-portal-gtk`) mostra os seletores de pasta e de arquivo; sem
 ele, "Escolher a pasta de ROMs…" não abre nada. Depois é só descompactar o `.tar.gz` e rodar
-`./mil-capivaras` dentro da pasta `mil-capivaras-0.9.0-freebsd-x86_64/` que ele cria. Ele é compilado numa VM FreeBSD 14.3 pelo mesmo workflow de release e foi
+`./mil-capivaras` dentro da pasta `mil-capivaras-0.9.1-freebsd-x86_64/` que ele cria. Ele é compilado numa VM FreeBSD 14.3 pelo mesmo workflow de release e foi
 testado no FreeBSD 15.1 (XFCE): imagem, biblioteca, janelas, seletores de pasta e um
 controle (Flydigi Vader 3). O som no FreeBSD ainda não foi testado.
 
@@ -217,7 +214,7 @@ FreeBSD, como o GhostBSD e o NomadBSD, devem funcionar, mas não foram testados.
 
 ### O que é preciso para rodar
 
-Só o arquivo **`mil-capivaras-0.9.0-linux-x86_64`** (nome, versão, sistema e arquitetura). Tudo vai embutido nele: ícone, traduções, banco de jogos, fonte japonesa, tema e molduras. Ao rodar, ele cria:
+Só o arquivo **`mil-capivaras-0.9.1-linux-x86_64`** (nome, versão, sistema e arquitetura). Tudo vai embutido nele: ícone, traduções, banco de jogos, fonte japonesa, tema e molduras. Ao rodar, ele cria:
 
 | Pasta | Conteúdo |
 |---|---|
@@ -243,7 +240,7 @@ pasta **`mil_capivaras_data/`** ao lado dele, e não na pasta do usuário:
 
 ```
 Pendrive/MilCapivaras/
-├── mil-capivaras-0.9.0-linux-x86_64.AppImage
+├── mil-capivaras-0.9.1-linux-x86_64.AppImage
 ├── portable.txt
 ├── roms/
 └── mil_capivaras_data/
@@ -289,16 +286,16 @@ uma tradução para entrar na próxima versão**, está em
 ### Linha de comando
 
 ```bash
-./mil-capivaras-0.9.0-linux-x86_64                              # abre a biblioteca
-./mil-capivaras-0.9.0-linux-x86_64 "Dig Dug (Japan).7z"         # abre um jogo (.pv1, .bin, .rom, .zip, .7z)
-./mil-capivaras-0.9.0-linux-x86_64 "/caminho/Casio - PV-1000/"  # abre a biblioteca nessa pasta
-./mil-capivaras-0.9.0-linux-x86_64 jogo.bin --scale 4           # janela em 4x
-./mil-capivaras-0.9.0-linux-x86_64 --couch                      # modo sofá (fica salvo)
-./mil-capivaras-0.9.0-linux-x86_64 --identify PASTA             # CRC32 e jogo do MAME de cada ROM
-./mil-capivaras-0.9.0-linux-x86_64 --info JOGO                  # ficha do jogo no terminal
-./mil-capivaras-0.9.0-linux-x86_64 --controls                   # controles detectados e botões apertados
-./mil-capivaras-0.9.0-linux-x86_64 --memory-map                 # mapa de memória (formato RetroAchievements)
-./mil-capivaras-0.9.0-linux-x86_64 JOGO --bench 3000            # velocidade, sem janela
-./mil-capivaras-0.9.0-linux-x86_64 JOGO --shot 500 q.ppm --press-start --dump-ram ram.bin  # validação
-./mil-capivaras-0.9.0-linux-x86_64 JOGO --shot 500 q.ppm --hardware                         # o mesmo, no modelo de hardware real
+./mil-capivaras-0.9.1-linux-x86_64                              # abre a biblioteca
+./mil-capivaras-0.9.1-linux-x86_64 "Dig Dug (Japan).7z"         # abre um jogo (.pv1, .bin, .rom, .zip, .7z)
+./mil-capivaras-0.9.1-linux-x86_64 "/caminho/Casio - PV-1000/"  # abre a biblioteca nessa pasta
+./mil-capivaras-0.9.1-linux-x86_64 jogo.bin --scale 4           # janela em 4x
+./mil-capivaras-0.9.1-linux-x86_64 --couch                      # modo sofá (fica salvo)
+./mil-capivaras-0.9.1-linux-x86_64 --identify PASTA             # CRC32 e jogo do MAME de cada ROM
+./mil-capivaras-0.9.1-linux-x86_64 --info JOGO                  # ficha do jogo no terminal
+./mil-capivaras-0.9.1-linux-x86_64 --controls                   # controles detectados e botões apertados
+./mil-capivaras-0.9.1-linux-x86_64 --memory-map                 # mapa de memória (formato RetroAchievements)
+./mil-capivaras-0.9.1-linux-x86_64 JOGO --bench 3000            # velocidade, sem janela
+./mil-capivaras-0.9.1-linux-x86_64 JOGO --shot 500 q.ppm --press-start --dump-ram ram.bin  # validação
+./mil-capivaras-0.9.1-linux-x86_64 JOGO --shot 500 q.ppm --hardware                         # o mesmo, no modelo de hardware real
 ```

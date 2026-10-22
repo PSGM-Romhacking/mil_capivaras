@@ -46,7 +46,7 @@ cartridges and the homebrews have the same kind of entry.
 | `roms[].crc` | CRC32 of the ROM: this is how the game is recognized, whatever the file name |
 | `roms[].size` | size in bytes, when known. Homebrews also match without the zero padding up to 8 or 16 KB that MAME's dumps have |
 
-To find a ROM's CRC: `./mil-capivaras-0.9.0-linux-x86_64 --identify FOLDER`. The ROMs not
+To find a ROM's CRC: `./mil-capivaras-0.9.1-linux-x86_64 --identify FOLDER`. The ROMs not
 in the database show "(not in the game database)".
 
 ## `games.en.json`, `games.pt.json`, `games.es.json`
@@ -74,7 +74,7 @@ in the next version ([translating.md](translating.md)).
 1. Find its CRC with `--identify`.
 2. Add an entry to `games.json`.
 3. Add its texts to `games.en.json`, `games.pt.json` and `games.es.json`.
-4. Check: `cargo test --release` and `./mil-capivaras-0.9.0-linux-x86_64 --info GAME`.
+4. Check: `cargo test --release` and `./mil-capivaras-0.9.1-linux-x86_64 --info GAME`.
 
 ## Rules (checked by the tests)
 

@@ -40,14 +40,14 @@ Los binarios están en los [releases](https://github.com/PSGM-Romhacking/mil_cap
 
 | Archivo | Sistema |
 |---|---|
-| `mil-capivaras-0.9.0-linux-x86_64.AppImage` | Linux x86-64 (glibc 2.27 o más reciente: Debian, Fedora, Arch, openSUSE y derivadas) |
-| `mil-capivaras-0.9.0-windows-x86_64.exe` | Windows 10 y 11, 64 bits |
-| `mil-capivaras-0.9.0-freebsd-x86_64.tar.gz` | FreeBSD 14 o más nuevo, amd64 (necesita algunos paquetes, ver el [manual](docs/manual.es.md#freebsd)) |
-| `mil-capivaras-0.9.0-linux-x86_64.AppImage.zsync` | el mapa de actualización del AppImage (lo usan Gear Lever y AppImageUpdate; no hace falta descargarlo) |
-| `mil_capivaras_libretro-0.9.0-linux-x86_64.zip` / `-windows-x86_64.zip` / `-freebsd-x86_64.zip` | el core libretro (`.so` / `.dll`) y su `.info`, para la carpeta de cores de RetroArch |
+| `mil-capivaras-0.9.1-linux-x86_64.AppImage` | Linux x86-64 (glibc 2.27 o más reciente: Debian, Fedora, Arch, openSUSE y derivadas) |
+| `mil-capivaras-0.9.1-windows-x86_64.exe` | Windows 10 y 11, 64 bits |
+| `mil-capivaras-0.9.1-freebsd-x86_64.tar.gz` | FreeBSD 14 o más nuevo, amd64 (necesita algunos paquetes, ver el [manual](docs/manual.es.md#freebsd)) |
+| `mil-capivaras-0.9.1-linux-x86_64.AppImage.zsync` | el mapa de actualización del AppImage (lo usan Gear Lever y AppImageUpdate; no hace falta descargarlo) |
+| `mil_capivaras_libretro-0.9.1-linux-x86_64.zip` / `-windows-x86_64.zip` / `-freebsd-x86_64.zip` | el core libretro (`.so` / `.dll`) y su `.info`, para la carpeta de cores de RetroArch |
 | `SHA256SUMS` | las sumas SHA-256 de todos los archivos, para verificar la descarga (`sha256sum -c SHA256SUMS`) |
 
-En Linux: `chmod +x mil-capivaras-0.9.0-linux-x86_64.AppImage` y ejecutarlo. No hace falta
+En Linux: `chmod +x mil-capivaras-0.9.1-linux-x86_64.AppImage` y ejecutarlo. No hace falta
 instalar nada. Los releases los arma GitHub Actions en cada tag de versión
 (`.github/workflows/release.yml`), y las notas de cada versión salen de
 [`CHANGELOG.md`](CHANGELOG.md).
@@ -82,7 +82,7 @@ RetroArch), no de números fijos.
 ## Compilar
 
 ```bash
-make                    # cargo build --release + copia a ./mil-capivaras-0.9.0-linux-x86_64
+make                    # cargo build --release + copia a ./mil-capivaras-0.9.1-linux-x86_64
 make install            # acceso directo "Mil Capivaras" en el menú de aplicaciones + íconos
 make install-libretro   # core libretro en la carpeta de cores de RetroArch
 packaging/build_linux.sh      # dist/…AppImage y el core .so (necesita cargo-zigbuild y zig)

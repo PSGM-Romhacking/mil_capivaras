@@ -46,7 +46,7 @@ cartuchos y los homebrews tienen el mismo tipo de entrada.
 | `roms[].crc` | CRC32 de la ROM: así se reconoce el juego, sea cual sea el nombre del archivo |
 | `roms[].size` | tamaño en bytes, cuando se conoce. Los homebrews también se reconocen sin el relleno con ceros hasta 8 o 16 KB que tienen los dumps de MAME |
 
-Para encontrar el CRC de una ROM: `./mil-capivaras-0.9.0-linux-x86_64 --identify CARPETA`.
+Para encontrar el CRC de una ROM: `./mil-capivaras-0.9.1-linux-x86_64 --identify CARPETA`.
 Las ROM que no están en la base aparecen como "(no está en la base de juegos)".
 
 ## `games.en.json`, `games.pt.json`, `games.es.json`
@@ -74,7 +74,7 @@ programa en la versión siguiente ([translating.es.md](translating.es.md)).
 1. Encuentra su CRC con `--identify`.
 2. Añade una entrada a `games.json`.
 3. Añade sus textos a `games.en.json`, `games.pt.json` y `games.es.json`.
-4. Comprueba: `cargo test --release` y `./mil-capivaras-0.9.0-linux-x86_64 --info JUEGO`.
+4. Comprueba: `cargo test --release` y `./mil-capivaras-0.9.1-linux-x86_64 --info JUEGO`.
 
 ## Reglas (comprobadas por las pruebas)
 
